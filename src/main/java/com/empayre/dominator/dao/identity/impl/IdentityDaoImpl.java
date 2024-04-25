@@ -14,11 +14,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.Optional;
 
 import static com.empayre.dominator.domain.tables.Identity.IDENTITY;
-
 
 @Component
 public class IdentityDaoImpl extends AbstractGenericDao implements IdentityDao {

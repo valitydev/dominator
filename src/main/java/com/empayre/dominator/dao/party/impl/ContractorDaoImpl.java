@@ -13,11 +13,10 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.util.Optional;
 
 import static com.empayre.dominator.domain.Tables.CONTRACTOR;
-
 
 @Component
 public class ContractorDaoImpl extends AbstractGenericDao implements ContractorDao {

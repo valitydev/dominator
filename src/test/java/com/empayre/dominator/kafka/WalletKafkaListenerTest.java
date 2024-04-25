@@ -30,5 +30,4 @@ public class WalletKafkaListenerTest {
         Mockito.verify(walletService, Mockito.timeout(TimeUnit.MINUTES.toMillis(1)).times(1))
                 .handleEvents(anyList());
     }
-
 }
