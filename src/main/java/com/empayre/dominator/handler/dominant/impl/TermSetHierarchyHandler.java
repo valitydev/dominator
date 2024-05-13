@@ -3,11 +3,14 @@ package com.empayre.dominator.handler.dominant.impl;
 import com.empayre.dominator.dao.dominant.iface.DomainObjectDao;
 import com.empayre.dominator.dao.party.impl.TermSetHierarchyDaoImpl;
 import com.empayre.dominator.domain.tables.pojos.TermSetHierarchy;
+import com.empayre.dominator.exception.SerializationException;
 import com.empayre.dominator.handler.dominant.AbstractDominantHandler;
 import com.empayre.dominator.util.JsonUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import dev.vality.damsel.domain.TermSetHierarchyObject;
 import lombok.RequiredArgsConstructor;
+import org.apache.thrift.TException;
+import org.apache.thrift.TSerializer;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,6 +22,7 @@ public class TermSetHierarchyHandler
         extends AbstractDominantHandler<TermSetHierarchyObject, TermSetHierarchy, Integer> {
 
     private final TermSetHierarchyDaoImpl termSetHierarchyDao;
+    private final TSerializer serializer;
 
     @Override
     protected DomainObjectDao<TermSetHierarchy, Integer> getDomainObjectDao() {
@@ -57,6 +61,11 @@ public class TermSetHierarchyHandler
                 .map(JsonUtil::thriftBaseToJsonNode)
                 .collect(Collectors.toList());
         termSetHierarchy.setTermSetsJson(JsonUtil.objectToJsonString(jsonNodes));
+        try {
+            termSetHierarchy.setTermSetHierarchyObject(serializer.serialize(termSetHierarchyObject));
+        } catch (TException e) {
+            throw new SerializationException(e);
+        }
         termSetHierarchy.setCurrent(current);
         return termSetHierarchy;
     }

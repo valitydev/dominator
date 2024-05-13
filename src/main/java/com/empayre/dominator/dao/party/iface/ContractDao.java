@@ -2,11 +2,10 @@ package com.empayre.dominator.dao.party.iface;
 
 import com.empayre.dominator.domain.tables.pojos.Contract;
 import com.empayre.dominator.exception.DaoException;
-import dev.vality.dao.GenericDao;
 
 import java.util.Optional;
 
-public interface ContractDao extends GenericDao {
+public interface ContractDao {
 
     Optional<Long> save(Contract contract) throws DaoException;
 

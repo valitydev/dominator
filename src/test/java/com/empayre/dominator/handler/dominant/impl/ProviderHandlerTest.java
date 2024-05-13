@@ -3,6 +3,8 @@ package com.empayre.dominator.handler.dominant.impl;
 import com.empayre.dominator.dao.dominant.impl.ProviderDaoImpl;
 import dev.vality.damsel.domain.*;
 import dev.vality.testcontainers.annotations.util.RandomBeans;
+import org.apache.thrift.TSerializer;
+import org.apache.thrift.transport.TTransportException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,9 +24,9 @@ public class ProviderHandlerTest {
     private ProviderDaoImpl providerDao;
 
     @Test
-    public void convertToDatabaseObjectTest() throws IOException {
+    public void convertToDatabaseObjectTest() throws IOException, TTransportException {
         ProviderObject providerObject = buildProviderObject();
-        ProviderHandler providerHandler = new ProviderHandler(providerDao);
+        ProviderHandler providerHandler = new ProviderHandler(providerDao, new TSerializer());
         providerHandler.setDomainObject(DomainObject.provider(providerObject));
         var provider = providerHandler.convertToDatabaseObject(providerObject, 1L, true);
         Assertions.assertNotNull(provider);
@@ -115,5 +117,4 @@ public class ProviderHandlerTest {
         cash.setCurrency(new CurrencyRef("RUB"));
         return cash;
     }
-
 }

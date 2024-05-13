@@ -1,19 +1,19 @@
 package com.empayre.dominator.dao.party.impl;
 
-import com.empayre.dominator.dao.dominant.iface.DomainObjectDao;
-import com.empayre.dominator.domain.Tables;
+import com.empayre.dominator.dao.AbstractDao;
+import com.empayre.dominator.dao.party.iface.TermSetHierarchyDao;
 import com.empayre.dominator.domain.tables.pojos.TermSetHierarchy;
-import com.empayre.dominator.domain.tables.records.TermSetHierarchyRecord;
 import com.empayre.dominator.exception.DaoException;
-import dev.vality.dao.impl.AbstractGenericDao;
-import org.jooq.Query;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 
+import java.util.List;
+
+import static com.empayre.dominator.domain.Tables.TERM_SET_HIERARCHY;
+
 @Component
-public class TermSetHierarchyDaoImpl extends AbstractGenericDao implements DomainObjectDao<TermSetHierarchy, Integer> {
+public class TermSetHierarchyDaoImpl extends AbstractDao implements TermSetHierarchyDao {
 
     public TermSetHierarchyDaoImpl(DataSource dataSource) {
         super(dataSource);
@@ -21,24 +21,34 @@ public class TermSetHierarchyDaoImpl extends AbstractGenericDao implements Domai
 
     @Override
     public Long save(TermSetHierarchy termSetHierarchy) throws DaoException {
-        TermSetHierarchyRecord termSetHierarchyRecord =
-                getDslContext().newRecord(Tables.TERM_SET_HIERARCHY, termSetHierarchy);
-        Query query = getDslContext()
-                .insertInto(Tables.TERM_SET_HIERARCHY)
-                .set(termSetHierarchyRecord)
-                .returning(Tables.TERM_SET_HIERARCHY.ID);
-        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-        executeOne(query, keyHolder);
-        return keyHolder.getKey().longValue();
+        return getDslContext()
+                .insertInto(TERM_SET_HIERARCHY)
+                .set(getDslContext().newRecord(TERM_SET_HIERARCHY, termSetHierarchy))
+                .onConflict(TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_REF_ID, TERM_SET_HIERARCHY.VERSION_ID)
+                .doUpdate()
+                .set(getDslContext().newRecord(TERM_SET_HIERARCHY, termSetHierarchy))
+                .returning(TERM_SET_HIERARCHY.ID)
+                .fetchOne()
+                .getId();
     }
 
     @Override
     public void updateNotCurrent(Integer termSetHierarchyId) throws DaoException {
-        Query query = getDslContext()
-                .update(Tables.TERM_SET_HIERARCHY)
-                .set(Tables.TERM_SET_HIERARCHY.CURRENT, false)
-                .where(Tables.TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_REF_ID.eq(termSetHierarchyId)
-                        .and(Tables.TERM_SET_HIERARCHY.CURRENT));
-        executeOne(query);
+        getDslContext()
+                .update(TERM_SET_HIERARCHY)
+                .set(TERM_SET_HIERARCHY.CURRENT, false)
+                .where(TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_REF_ID.eq(termSetHierarchyId)
+                        .and(TERM_SET_HIERARCHY.CURRENT))
+                .execute();
+    }
+
+    @Override
+    public List<TermSetHierarchy> getTermSetHierarchyHistory(Integer refId) {
+        return getDslContext()
+                .selectFrom(TERM_SET_HIERARCHY)
+                .where(TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_REF_ID.eq(refId))
+                .and(TERM_SET_HIERARCHY.CURRENT.isFalse())
+                .orderBy(TERM_SET_HIERARCHY.ID.desc())
+                .fetchInto(TermSetHierarchy.class);
     }
 }

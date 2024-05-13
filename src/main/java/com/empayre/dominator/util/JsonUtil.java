@@ -8,6 +8,9 @@ import dev.vality.geck.serializer.kit.tbase.TBaseProcessor;
 import org.apache.thrift.TBase;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class JsonUtil {
@@ -43,6 +46,12 @@ public class JsonUtil {
         } catch (IOException e) {
             throw new IllegalStateException("Couldn't convert json string to object: ", e);
         }
+    }
+
+    public static <T> List<T> listOfStringsToObjectsList(List<String> source, Class<T> type) {
+        return source == null ? new ArrayList<>() : source.stream()
+                .map(sourceString -> stringToObject(sourceString.getBytes(StandardCharsets.UTF_8), type))
+                .toList();
     }
 
     public static <T> byte[] toBytes(T object) {

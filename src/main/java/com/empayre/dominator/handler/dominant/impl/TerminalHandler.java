@@ -1,5 +1,6 @@
 package com.empayre.dominator.handler.dominant.impl;
 
+import com.empayre.dominator.exception.SerializationException;
 import com.empayre.dominator.handler.dominant.AbstractDominantHandler;
 import dev.vality.damsel.domain.TerminalObject;
 import com.empayre.dominator.dao.dominant.iface.DomainObjectDao;
@@ -7,6 +8,8 @@ import com.empayre.dominator.dao.dominant.impl.TerminalDaoImpl;
 import com.empayre.dominator.domain.tables.pojos.Terminal;
 import com.empayre.dominator.util.JsonUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.thrift.TException;
+import org.apache.thrift.TSerializer;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Component;
 public class TerminalHandler extends AbstractDominantHandler<TerminalObject, Terminal, Integer> {
 
     private final TerminalDaoImpl terminalDao;
+    private final TSerializer serializer;
 
     @Override
     protected DomainObjectDao<Terminal, Integer> getDomainObjectDao() {
@@ -48,6 +52,11 @@ public class TerminalHandler extends AbstractDominantHandler<TerminalObject, Ter
         }
         if (data.isSetTerms()) {
             terminal.setTermsJson(JsonUtil.thriftBaseToJsonString(data.getTerms()));
+            try {
+                terminal.setTermsObject(serializer.serialize(data.getTerms()));
+            } catch (TException e) {
+                throw new SerializationException(e);
+            }
         }
         terminal.setExternalTerminalId(data.getExternalTerminalId());
         terminal.setExternalMerchantId(data.getExternalMerchantId());

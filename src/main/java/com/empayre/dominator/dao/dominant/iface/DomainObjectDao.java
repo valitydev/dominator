@@ -1,9 +1,8 @@
 package com.empayre.dominator.dao.dominant.iface;
 
 import com.empayre.dominator.exception.DaoException;
-import dev.vality.dao.GenericDao;
 
-public interface DomainObjectDao<T, I> extends GenericDao {
+public interface DomainObjectDao<T, I> {
 
     Long save(T domainObject) throws DaoException;
 

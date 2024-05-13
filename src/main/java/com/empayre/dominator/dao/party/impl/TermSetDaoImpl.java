@@ -1,0 +1,91 @@
+package com.empayre.dominator.dao.party.impl;
+
+import com.empayre.dominator.dao.AbstractDao;
+import com.empayre.dominator.dao.mapper.ShopTermSetDataObjectRowMapper;
+import com.empayre.dominator.dao.mapper.TerminalTermSetDataObjectRowMapper;
+import com.empayre.dominator.dao.mapper.WalletTermSetDataObjectRowMapper;
+import com.empayre.dominator.dao.party.iface.TermSetDao;
+import com.empayre.dominator.data.ShopTermSetDataObject;
+import com.empayre.dominator.data.TerminalTermSetDataObject;
+import com.empayre.dominator.data.WalletTermSetDataObject;
+import org.jooq.*;
+import org.jooq.Record;
+import org.springframework.stereotype.Component;
+
+import javax.sql.DataSource;
+import java.util.List;
+
+import static com.empayre.dominator.domain.Tables.*;
+
+@Component
+public class TermSetDaoImpl extends AbstractDao implements TermSetDao {
+
+    private final RecordMapper<Record, ShopTermSetDataObject> shopTermSetDataObjectRowMapper;
+    private final RecordMapper<Record, WalletTermSetDataObject> walletTermSetDataObjectRowMapper;
+    private final RecordMapper<Record, TerminalTermSetDataObject> terminalTermSetDataObjectRowMapper;
+
+
+    public TermSetDaoImpl(DataSource dataSource) {
+        super(dataSource);
+        shopTermSetDataObjectRowMapper = new ShopTermSetDataObjectRowMapper();
+        walletTermSetDataObjectRowMapper = new WalletTermSetDataObjectRowMapper();
+        terminalTermSetDataObjectRowMapper = new TerminalTermSetDataObjectRowMapper();
+    }
+
+    @Override
+    public List<ShopTermSetDataObject> getShopTermSets(Condition condition, int limit) {
+        var fetch = getDslContext()
+                .select(SHOP.ID, SHOP.PARTY_ID, SHOP.SHOP_ID, SHOP.CONTRACT_ID, SHOP.ACCOUNT_CURRENCY_CODE,
+                        SHOP.DETAILS_NAME, CONTRACT.TERMS_ID, TERM_SET_HIERARCHY.NAME,
+                        TERM_SET_HIERARCHY.TERM_SETS_JSON, TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_OBJECT)
+                .from(SHOP)
+                .join(CONTRACT)
+                .on(CONTRACT.CONTRACT_ID.eq(SHOP.CONTRACT_ID).and(CONTRACT.CURRENT))
+                .join(TERM_SET_HIERARCHY)
+                .on(TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_REF_ID.eq(CONTRACT.TERMS_ID).and(TERM_SET_HIERARCHY.CURRENT))
+                .where(condition)
+                .orderBy(SHOP.ID.desc())
+                .limit(limit)
+                .fetch();
+        return fetch
+                .map(shopTermSetDataObjectRowMapper);
+    }
+
+    @Override
+    public List<WalletTermSetDataObject> getWalletTermSets(Condition condition, int limit) {
+        var fetch = getDslContext()
+                .select(WALLET.PARTY_ID, WALLET.IDENTITY_ID, IDENTITY.PARTY_CONTRACT_ID, WALLET.CURRENCY_CODE,
+                        WALLET.WALLET_ID, WALLET.WALLET_NAME, CONTRACT.TERMS_ID, TERM_SET_HIERARCHY.NAME,
+                        TERM_SET_HIERARCHY.TERM_SETS_JSON, WALLET.ID, TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_OBJECT)
+                .from(WALLET)
+                .join(IDENTITY)
+                .on(WALLET.IDENTITY_ID.eq(IDENTITY.IDENTITY_ID).and(IDENTITY.CURRENT))
+                .join(CONTRACT)
+                .on(CONTRACT.CONTRACT_ID.eq(IDENTITY.PARTY_CONTRACT_ID).and(CONTRACT.CURRENT))
+                .join(TERM_SET_HIERARCHY)
+                .on(TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_REF_ID.eq(CONTRACT.TERMS_ID).and(TERM_SET_HIERARCHY.CURRENT))
+                .where(condition)
+                .orderBy(WALLET.ID.desc())
+                .limit(limit)
+                .fetch();
+        return fetch
+                .map(walletTermSetDataObjectRowMapper);
+    }
+
+    @Override
+    public List<TerminalTermSetDataObject> getTerminalTermSets(Condition condition, int limit) {
+        var fetch = getDslContext()
+                .select(TERMINAL.TERMINAL_REF_ID, TERMINAL.NAME, PROVIDER.PROVIDER_REF_ID, PROVIDER.NAME,
+                        TERMINAL.TERMS_JSON, PROVIDER.PAYMENT_TERMS_JSON, PROVIDER.WALLET_TERMS_JSON,
+                        PROVIDER.ACCOUNTS_JSON, TERMINAL.ID, TERMINAL.TERMS_OBJECT)
+                .from(TERMINAL)
+                .join(PROVIDER)
+                .on(TERMINAL.TERMINAL_PROVIDER_REF_ID.eq(PROVIDER.PROVIDER_REF_ID).and(PROVIDER.CURRENT))
+                .where(condition)
+                .orderBy(TERMINAL.ID.desc())
+                .limit(limit)
+                .fetch();
+        return fetch
+                .map(terminalTermSetDataObjectRowMapper);
+    }
+}

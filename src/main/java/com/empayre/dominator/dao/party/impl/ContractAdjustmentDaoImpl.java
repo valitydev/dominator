@@ -1,12 +1,10 @@
 package com.empayre.dominator.dao.party.impl;
 
+import com.empayre.dominator.dao.AbstractDao;
 import com.empayre.dominator.dao.party.iface.ContractAdjustmentDao;
 import com.empayre.dominator.domain.tables.pojos.ContractAdjustment;
 import com.empayre.dominator.exception.DaoException;
-import dev.vality.dao.impl.AbstractGenericDao;
-import dev.vality.mapper.RecordRowMapper;
 import org.jooq.Query;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -16,13 +14,10 @@ import java.util.stream.Collectors;
 import static com.empayre.dominator.domain.Tables.CONTRACT_ADJUSTMENT;
 
 @Component
-public class ContractAdjustmentDaoImpl extends AbstractGenericDao implements ContractAdjustmentDao {
-
-    private final RowMapper<ContractAdjustment> contractAdjustmentRowMapper;
+public class ContractAdjustmentDaoImpl extends AbstractDao implements ContractAdjustmentDao {
 
     public ContractAdjustmentDaoImpl(DataSource dataSource) {
         super(dataSource);
-        this.contractAdjustmentRowMapper = new RecordRowMapper<>(CONTRACT_ADJUSTMENT, ContractAdjustment.class);
     }
 
     @Override
@@ -30,17 +25,20 @@ public class ContractAdjustmentDaoImpl extends AbstractGenericDao implements Con
         List<Query> queries = contractAdjustmentList.stream()
                 .map(contractAdjustment -> getDslContext().newRecord(CONTRACT_ADJUSTMENT, contractAdjustment))
                 .map(contractAdjustmentRecord ->
-                        getDslContext().insertInto(CONTRACT_ADJUSTMENT).set(contractAdjustmentRecord))
+                        getDslContext()
+                                .insertInto(CONTRACT_ADJUSTMENT)
+                                .set(contractAdjustmentRecord))
                 .collect(Collectors.toList());
-        batchExecute(queries);
+        getDslContext().batch(queries).execute();
     }
 
     @Override
     public List<ContractAdjustment> getByContractId(Long contractId) throws DaoException {
-        Query query = getDslContext()
+        return getDslContext()
                 .selectFrom(CONTRACT_ADJUSTMENT)
                 .where(CONTRACT_ADJUSTMENT.CONTRACT_ID.eq(contractId))
-                .orderBy(CONTRACT_ADJUSTMENT.ID.asc());
-        return fetch(query, contractAdjustmentRowMapper);
+                .orderBy(CONTRACT_ADJUSTMENT.ID.asc())
+                .fetch()
+                .into(ContractAdjustment.class);
     }
 }

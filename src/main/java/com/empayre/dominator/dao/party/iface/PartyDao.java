@@ -1,12 +1,11 @@
 package com.empayre.dominator.dao.party.iface;
 
 import com.empayre.dominator.exception.DaoException;
-import dev.vality.dao.GenericDao;
 import com.empayre.dominator.domain.tables.pojos.Party;
 
 import java.util.Optional;
 
-public interface PartyDao extends GenericDao {
+public interface PartyDao {
     Optional<Long> save(Party party) throws DaoException;
 
     Party get(String partyId) throws DaoException;
