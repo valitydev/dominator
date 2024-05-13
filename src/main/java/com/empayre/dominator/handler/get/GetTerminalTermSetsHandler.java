@@ -2,17 +2,17 @@ package com.empayre.dominator.handler.get;
 
 import com.empayre.dominator.dao.party.iface.TermSetDao;
 import com.empayre.dominator.data.TerminalTermSetDataObject;
-import dev.vality.dominator.*;
+import dev.vality.dominator.TerminalSearchQuery;
+import dev.vality.dominator.TerminalTermSet;
+import dev.vality.dominator.TerminalTermSetsResponse;
 import lombok.RequiredArgsConstructor;
-import org.jooq.Condition;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 
-import static com.empayre.dominator.domain.Tables.*;
+import static com.empayre.dominator.util.TermSetConditionUtils.createTerminalCondition;
 
 @Component
 @RequiredArgsConstructor
@@ -24,7 +24,7 @@ public class GetTerminalTermSetsHandler implements GetTermSetsHandler<TerminalSe
     @Override
     public TerminalTermSetsResponse handle(TerminalSearchQuery query) {
         List<TerminalTermSetDataObject> terminalTermSets = termSetDao.getTerminalTermSets(
-                createCondition(query),
+                createTerminalCondition(query),
                 query.getCommonSearchQueryParams().getLimit()
         );
 
@@ -36,37 +36,5 @@ public class GetTerminalTermSetsHandler implements GetTermSetsHandler<TerminalSe
     private String createContinuationToken(List<TerminalTermSetDataObject> terminalTermSets) {
         return CollectionUtils.isEmpty(terminalTermSets)
                 ? null : String.valueOf(terminalTermSets.get(terminalTermSets.size() - 1).getId());
-    }
-
-    private Condition createCondition(TerminalSearchQuery query) {
-        Condition condition = TERMINAL.CURRENT.isTrue();
-        CommonSearchQueryParams commonSearchQueryParams = query.getCommonSearchQueryParams();
-        if (!CollectionUtils.isEmpty(commonSearchQueryParams.getCurrencies())) {
-            Condition currencyCondition = null;
-            for (String currency : commonSearchQueryParams.getCurrencies()) {
-                Condition currentCurrencyCondition = PROVIDER.ACCOUNTS_JSON.like("%%s%".formatted(currency));
-                currencyCondition = currencyCondition == null
-                        ? currentCurrencyCondition : currencyCondition.or(currentCurrencyCondition);
-
-            }
-            condition = condition.and(currencyCondition);
-        }
-        if (!CollectionUtils.isEmpty(query.getTerminalIds())) {
-            List<Integer> ids = query.getTerminalIds().stream()
-                    .map(refId -> refId.getId())
-                    .toList();
-            condition = condition.and(TERMINAL.TERMINAL_REF_ID.in(ids));
-        }
-        if (!CollectionUtils.isEmpty(query.getProviderIds())) {
-            List<Integer> ids = query.getProviderIds().stream()
-                    .map(refId -> refId.getId())
-                    .toList();
-            condition = condition.and(PROVIDER.PROVIDER_REF_ID.in(ids));
-        }
-        String token = commonSearchQueryParams.getContinuationToken();
-        if (StringUtils.hasText(token)) {
-            condition = condition.and(TERMINAL.ID.lessThan(Long.valueOf(token)));
-        }
-        return condition;
     }
 }

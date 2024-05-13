@@ -71,7 +71,7 @@ public class TerminalTermSetConverter implements Converter<TerminalTermSetDataOb
             return map.keySet().stream()
                     .collect(Collectors.joining(DELIMITER));
         } catch (JsonProcessingException e) {
-            log.error("Accounts list convert error", e);
+            log.error("Currency extraction error", e);
             return Strings.EMPTY;
         }
     }
