@@ -32,7 +32,8 @@ public class PartyDaoImpl extends AbstractDao implements PartyDao {
                 .onConflict(PARTY.PARTY_ID, PARTY.SEQUENCE_ID, PARTY.CHANGE_ID)
                 .doNothing()
                 .returning(PARTY.ID)
-                .fetchOneInto(Long.class);
+                .fetchOne()
+                .getId();
 
         return Optional.ofNullable(id).map(Number::longValue);
     }

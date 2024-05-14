@@ -114,8 +114,8 @@ public class DominatorServiceTest {
         for (int i = 1; i <= 10; i++) {
             String identityId = "Identity-" + i;
             String walletId = "Wallet-" + i;
-            String partyId = "Party-" + i;
-            String contractId = "Contract-" + i;
+            String partyId = "WParty-" + i;
+            String contractId = "WContract-" + i;
             Integer termsId = i;
             for (int j = 1; j <= 3; j++) {
                 walletDao.save(generateNewWallet(walletId, identityId, partyId, false));
@@ -132,7 +132,7 @@ public class DominatorServiceTest {
         WalletTermSetsResponse partyResponse = dominatorService.searchWalletTermSets(
                 new WalletSearchQuery()
                         .setCommonSearchQueryParams(new CommonSearchQueryParams().setLimit(10))
-                        .setPartyId("Party-1")
+                        .setPartyId("WParty-1")
         );
         assertNotNull(partyResponse);
         assertNotNull(partyResponse.getContinuationToken());
