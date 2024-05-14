@@ -1,12 +1,11 @@
 package com.empayre.dominator.dao.party.iface;
 
 import com.empayre.dominator.exception.DaoException;
-import dev.vality.dao.GenericDao;
 import com.empayre.dominator.domain.tables.pojos.Shop;
 
 import java.util.Optional;
 
-public interface ShopDao extends GenericDao {
+public interface ShopDao {
 
     Optional<Long> save(Shop shop) throws DaoException;
 

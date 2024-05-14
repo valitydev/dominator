@@ -2,11 +2,10 @@ package com.empayre.dominator.dao.identity.iface;
 
 import com.empayre.dominator.domain.tables.pojos.Identity;
 import com.empayre.dominator.exception.DaoException;
-import dev.vality.dao.GenericDao;
 
 import java.util.Optional;
 
-public interface IdentityDao extends GenericDao {
+public interface IdentityDao {
 
     Optional<Long> save(Identity identity) throws DaoException;
 

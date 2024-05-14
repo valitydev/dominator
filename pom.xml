@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>dominator</artifactId>
-    <version>2.0.0</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>dominator</name>
@@ -146,6 +146,11 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>db-common-lib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>dev.vality</groupId>
+            <artifactId>dominator-proto</artifactId>
+            <version>1.4-68a8678</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>

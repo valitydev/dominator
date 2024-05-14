@@ -3,22 +3,28 @@ package com.empayre.dominator.handler.dominant.impl;
 import com.empayre.dominator.dao.dominant.iface.DomainObjectDao;
 import com.empayre.dominator.dao.dominant.impl.ProviderDaoImpl;
 import com.empayre.dominator.domain.tables.pojos.Provider;
+import com.empayre.dominator.exception.SerializationException;
 import com.empayre.dominator.handler.dominant.AbstractDominantHandler;
 import com.empayre.dominator.util.JsonUtil;
+import dev.vality.damsel.domain.PaymentsProvisionTerms;
 import dev.vality.damsel.domain.ProviderObject;
+import dev.vality.damsel.domain.ProviderParameter;
+import lombok.RequiredArgsConstructor;
+import org.apache.thrift.TBase;
+import org.apache.thrift.TException;
+import org.apache.thrift.TSerializer;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class ProviderHandler extends AbstractDominantHandler<ProviderObject, Provider, Integer> {
 
     private final ProviderDaoImpl providerDao;
-
-    public ProviderHandler(ProviderDaoImpl providerDao) {
-        this.providerDao = providerDao;
-    }
+    private final TSerializer serializer;
 
     @Override
     protected DomainObjectDao<Provider, Integer> getDomainObjectDao() {
@@ -54,16 +60,22 @@ public class ProviderHandler extends AbstractDominantHandler<ProviderObject, Pro
         }
 
         if (data.isSetTerms() && data.getTerms().isSetPayments()) {
-            provider.setPaymentTermsJson(JsonUtil.thriftBaseToJsonString(data.getTerms().getPayments()));
+            PaymentsProvisionTerms provisionTerms = data.getTerms().getPayments();
+            provider.setPaymentTermsJson(JsonUtil.thriftBaseToJsonString(provisionTerms));
+            provider.setPaymentTermsObject(serialize(provisionTerms));
         } else if (data.isSetPaymentTerms()) {
-            provider.setPaymentTermsJson(JsonUtil.thriftBaseToJsonString(data.getPaymentTerms()));
+            PaymentsProvisionTerms paymentTerms = data.getPaymentTerms();
+            provider.setPaymentTermsJson(JsonUtil.thriftBaseToJsonString(paymentTerms));
+            provider.setPaymentTermsObject(serialize(paymentTerms));
         }
 
         if (data.isSetTerms() && data.getTerms().isSetRecurrentPaytools()) {
             provider.setRecurrentPaytoolTermsJson(
                     JsonUtil.thriftBaseToJsonString(data.getTerms().getRecurrentPaytools()));
+            provider.setRecurrentPaytoolTermsObject(serialize(data.getTerms().getRecurrentPaytools()));
         } else if (data.isSetRecurrentPaytoolTerms()) {
             provider.setRecurrentPaytoolTermsJson(JsonUtil.thriftBaseToJsonString(data.getRecurrentPaytoolTerms()));
+            provider.setRecurrentPaytoolTermsObject(serialize(data.getRecurrentPaytoolTerms()));
         }
 
         if (data.isSetIdentity()) {
@@ -71,14 +83,20 @@ public class ProviderHandler extends AbstractDominantHandler<ProviderObject, Pro
         }
         if (data.isSetTerms() && data.getTerms().isSetWallet()) {
             provider.setWalletTermsJson(JsonUtil.thriftBaseToJsonString(data.getTerms().getWallet()));
+            provider.setWalletTermsObject(serialize(data.getTerms().getWallet()));
         }
         if (data.isSetParamsSchema()) {
-            provider.setParamsSchemaJson(
-                    JsonUtil.objectToJsonString(
-                            data.getParamsSchema().stream().map(
-                                    JsonUtil::thriftBaseToJsonNode).collect(Collectors.toList())
-                    )
+            List<ProviderParameter> paramsSchema = data.getParamsSchema();
+            provider.setParamsSchemaJson(JsonUtil.objectToJsonString(
+                            paramsSchema.stream()
+                                    .map(JsonUtil::thriftBaseToJsonNode)
+                                    .collect(Collectors.toList()))
             );
+            byte[][] params = new byte[paramsSchema.size()][];
+            for (int i = 0; i < paramsSchema.size(); i++) {
+                params[i] = serialize(paramsSchema.get(i));
+            }
+            provider.setParamsSchemaObject(params);
         }
 
         if (data.isSetAccounts()) {
@@ -89,5 +107,13 @@ public class ProviderHandler extends AbstractDominantHandler<ProviderObject, Pro
         }
         provider.setCurrent(current);
         return provider;
+    }
+
+    private byte[] serialize(TBase<?, ?> base) {
+        try {
+            return serializer.serialize(base);
+        } catch (TException e) {
+            throw new SerializationException(e);
+        }
     }
 }

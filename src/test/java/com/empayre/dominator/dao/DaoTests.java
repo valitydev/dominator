@@ -58,10 +58,6 @@ public class DaoTests {
 
     @Test
     public void dominantDaoTest() {
-        jdbcTemplate.execute("truncate table dmn.provider cascade");
-        jdbcTemplate.execute("truncate table dmn.term_set_hierarchy cascade");
-        jdbcTemplate.execute("truncate table dmn.terminal cascade");
-
         Provider provider = RandomBeans.random(Provider.class);
         provider.setCurrent(true);
         providerDao.save(provider);
@@ -89,8 +85,6 @@ public class DaoTests {
 
     @Test
     public void contractAdjustmentDaoTest() {
-        jdbcTemplate.execute("truncate table dmn.contract_adjustment cascade");
-        jdbcTemplate.execute("truncate table dmn.contract cascade");
         Contract contract = RandomBeans.random(Contract.class);
         contract.setCurrent(true);
         Long cntrctId = contractDao.save(contract).get();
@@ -103,7 +97,6 @@ public class DaoTests {
 
     @Test
     public void contractDaoTest() {
-        jdbcTemplate.execute("truncate table dmn.contract cascade");
         Contract contract = RandomBeans.random(Contract.class);
         contract.setCurrent(true);
         contractDao.save(contract);
@@ -113,7 +106,6 @@ public class DaoTests {
 
     @Test
     public void contractorDaoTest() {
-        jdbcTemplate.execute("truncate table dmn.contractor cascade");
         Contractor contractor = RandomBeans.random(Contractor.class);
         contractor.setCurrent(true);
         contractorDao.save(contractor);
@@ -129,7 +121,6 @@ public class DaoTests {
 
     @Test
     public void partyDaoTest() {
-        jdbcTemplate.execute("truncate table dmn.party cascade");
         Party party = RandomBeans.random(Party.class);
         party.setCurrent(true);
         partyDao.save(party);
@@ -149,8 +140,6 @@ public class DaoTests {
 
     @Test
     public void payoutToolDaoTest() {
-        jdbcTemplate.execute("truncate table dmn.contract cascade");
-        jdbcTemplate.execute("truncate table dmn.payout_tool cascade");
         Contract contract = RandomBeans.random(Contract.class);
         contract.setCurrent(true);
         Long contractId = contractDao.save(contract).get();
@@ -163,7 +152,6 @@ public class DaoTests {
 
     @Test
     public void shopDaoTest() {
-        jdbcTemplate.execute("truncate table dmn.shop cascade");
         Shop shop = RandomBeans.random(Shop.class);
         shop.setCurrent(true);
         shopDao.save(shop);

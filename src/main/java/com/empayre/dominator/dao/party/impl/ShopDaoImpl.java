@@ -1,68 +1,62 @@
 package com.empayre.dominator.dao.party.impl;
 
+import com.empayre.dominator.dao.AbstractDao;
 import com.empayre.dominator.dao.party.iface.ShopDao;
 import com.empayre.dominator.domain.tables.pojos.Shop;
-import com.empayre.dominator.domain.tables.records.ShopRecord;
 import com.empayre.dominator.exception.DaoException;
 import com.empayre.dominator.exception.NotFoundException;
-import dev.vality.dao.impl.AbstractGenericDao;
-import dev.vality.mapper.RecordRowMapper;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
-import org.jooq.Query;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import jakarta.validation.constraints.NotNull;
 import java.util.Optional;
 
 import static com.empayre.dominator.domain.Tables.SHOP;
 
 @Slf4j
 @Component
-public class ShopDaoImpl extends AbstractGenericDao implements ShopDao {
-
-    private final RowMapper<Shop> shopRowMapper;
+public class ShopDaoImpl extends AbstractDao implements ShopDao {
 
     public ShopDaoImpl(DataSource dataSource) {
         super(dataSource);
-        shopRowMapper = new RecordRowMapper<>(SHOP, Shop.class);
     }
 
     @Override
     public Optional<Long> save(Shop shop) throws DaoException {
-        ShopRecord record = getDslContext().newRecord(SHOP, shop);
-        Query query = getDslContext()
+        Long id = getDslContext()
                 .insertInto(SHOP)
-                .set(record)
+                .set(getDslContext().newRecord(SHOP, shop))
                 .onConflict(SHOP.PARTY_ID, SHOP.SHOP_ID, SHOP.SEQUENCE_ID, SHOP.CHANGE_ID, SHOP.CLAIM_EFFECT_ID)
-                .doNothing()
-                .returning(SHOP.ID);
-        GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-        execute(query, keyHolder);
-        return Optional.ofNullable(keyHolder.getKey()).map(Number::longValue);
+                .doUpdate()
+                .set(getDslContext().newRecord(SHOP, shop))
+                .returning(SHOP.ID)
+                .fetchOne()
+                .getId();
+        return Optional.ofNullable(id);
     }
 
     @NotNull
     @Override
     public Shop get(String partyId, String shopId) throws DaoException {
-        Query query = getDslContext()
+        var result = getDslContext()
                 .selectFrom(SHOP)
                 .where(SHOP.PARTY_ID.eq(partyId)
                         .and(SHOP.SHOP_ID.eq(shopId))
-                        .and(SHOP.CURRENT));
-        return Optional.ofNullable(fetchOne(query, shopRowMapper))
+                        .and(SHOP.CURRENT))
+                .fetchOne()
+                .into(Shop.class);
+        return Optional.ofNullable(result)
                 .orElseThrow(() -> new NotFoundException(String.format("Shop not found, shopId='%s'", shopId)));
     }
 
     @Override
     public void updateNotCurrent(Long id) throws DaoException {
-        Query query = getDslContext()
+        getDslContext()
                 .update(SHOP)
                 .set(SHOP.CURRENT, false)
-                .where(SHOP.ID.eq(id));
-        executeOne(query);
+                .where(SHOP.ID.eq(id))
+                .execute();
     }
 
     @Override

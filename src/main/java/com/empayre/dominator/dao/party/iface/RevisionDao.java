@@ -1,9 +1,8 @@
 package com.empayre.dominator.dao.party.iface;
 
 import com.empayre.dominator.exception.DaoException;
-import dev.vality.dao.GenericDao;
 
-public interface RevisionDao extends GenericDao {
+public interface RevisionDao {
 
     void saveShopsRevision(String partyId, long revision) throws DaoException;
 
