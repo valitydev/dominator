@@ -6,6 +6,7 @@ import dev.vality.dominator.WalletSearchQuery;
 import dev.vality.dominator.WalletTermSet;
 import dev.vality.dominator.WalletTermSetsResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import static com.empayre.dominator.util.TermSetConditionUtils.createWalletCondition;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class GetWalletTermSetsHandler implements GetTermSetsHandler<WalletSearchQuery, WalletTermSetsResponse> {
@@ -23,14 +25,18 @@ public class GetWalletTermSetsHandler implements GetTermSetsHandler<WalletSearch
 
     @Override
     public WalletTermSetsResponse handle(WalletSearchQuery query) {
+        log.info("Start WalletTermSets getting (query: {})", query);
         List<WalletTermSetDataObject> walletTermSets = termSetDao.getWalletTermSets(
                 createWalletCondition(query),
                 query.getCommonSearchQueryParams().getLimit()
         );
 
-        return new WalletTermSetsResponse()
+        WalletTermSetsResponse response = new WalletTermSetsResponse()
                 .setTerms(walletTermSets.stream().map(set -> walletTermSetConverter.convert(set)).toList())
                 .setContinuationToken(createContinuationToken(walletTermSets));
+        log.info("Start WalletTermSets getting (query: {}, terms.size: {}, token: {})",
+                query, response.getTerms().size(), response.getContinuationToken());
+        return response;
     }
 
     private String createContinuationToken(List<WalletTermSetDataObject> walletTermSets) {
