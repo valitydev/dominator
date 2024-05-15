@@ -34,8 +34,9 @@ public class GetShopTermSetsHandler implements GetTermSetsHandler<ShopSearchQuer
         ShopTermSetsResponse response = new ShopTermSetsResponse()
                 .setTerms(shopTermSets.stream().map(termSet -> shopTermSetConverter.convert(termSet)).toList())
                 .setContinuationToken(createContinuationToken(shopTermSets));
-        log.info("Start ShopTermSets getting (query: {}, terms.size: {}, token: {})",
+        log.info("Finish ShopTermSets getting (query: {}, terms.size: {}, token: {})",
                 query, response.getTerms().size(), response.getContinuationToken());
+        log.debug("Result ShopTermSetsResponse: {}", response);
         return response;
     }
 

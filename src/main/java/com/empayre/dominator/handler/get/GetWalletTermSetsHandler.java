@@ -34,8 +34,9 @@ public class GetWalletTermSetsHandler implements GetTermSetsHandler<WalletSearch
         WalletTermSetsResponse response = new WalletTermSetsResponse()
                 .setTerms(walletTermSets.stream().map(set -> walletTermSetConverter.convert(set)).toList())
                 .setContinuationToken(createContinuationToken(walletTermSets));
-        log.info("Start WalletTermSets getting (query: {}, terms.size: {}, token: {})",
+        log.info("Finish WalletTermSets getting (query: {}, terms.size: {}, token: {})",
                 query, response.getTerms().size(), response.getContinuationToken());
+        log.debug("Result WalletTermSetsResponse: {}", response);
         return response;
     }
 
