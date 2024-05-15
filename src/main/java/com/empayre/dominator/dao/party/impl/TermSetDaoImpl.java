@@ -10,6 +10,7 @@ import com.empayre.dominator.data.TerminalTermSetDataObject;
 import com.empayre.dominator.data.WalletTermSetDataObject;
 import org.jooq.*;
 import org.jooq.Record;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -24,6 +25,8 @@ public class TermSetDaoImpl extends AbstractDao implements TermSetDao {
     private final RecordMapper<Record, WalletTermSetDataObject> walletTermSetDataObjectRowMapper;
     private final RecordMapper<Record, TerminalTermSetDataObject> terminalTermSetDataObjectRowMapper;
 
+    @Value("${service.default.limit}")
+    private int defaultLimit;
 
     public TermSetDaoImpl(DataSource dataSource) {
         super(dataSource);
@@ -45,7 +48,7 @@ public class TermSetDaoImpl extends AbstractDao implements TermSetDao {
                 .on(TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_REF_ID.eq(CONTRACT.TERMS_ID).and(TERM_SET_HIERARCHY.CURRENT))
                 .where(condition)
                 .orderBy(SHOP.ID.desc())
-                .limit(limit)
+                .limit(getLimit(limit))
                 .fetch();
         return fetch
                 .map(shopTermSetDataObjectRowMapper);
@@ -66,7 +69,7 @@ public class TermSetDaoImpl extends AbstractDao implements TermSetDao {
                 .on(TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_REF_ID.eq(CONTRACT.TERMS_ID).and(TERM_SET_HIERARCHY.CURRENT))
                 .where(condition)
                 .orderBy(WALLET.ID.desc())
-                .limit(limit)
+                .limit(getLimit(limit))
                 .fetch();
         return fetch
                 .map(walletTermSetDataObjectRowMapper);
@@ -83,9 +86,13 @@ public class TermSetDaoImpl extends AbstractDao implements TermSetDao {
                 .on(TERMINAL.TERMINAL_PROVIDER_REF_ID.eq(PROVIDER.PROVIDER_REF_ID).and(PROVIDER.CURRENT))
                 .where(condition)
                 .orderBy(TERMINAL.ID.desc())
-                .limit(limit)
+                .limit(getLimit(limit))
                 .fetch();
         return fetch
                 .map(terminalTermSetDataObjectRowMapper);
+    }
+
+    private int getLimit(int sourceLimit) {
+        return sourceLimit < 1 ? defaultLimit : sourceLimit;
     }
 }

@@ -68,6 +68,13 @@ public class DominatorServiceTest {
             termSetHierarchyDao.save(generateNewTermSetHierarchy(Long.valueOf(i), termsId, true));
         }
 
+        ShopTermSetsResponse simpleResponse = dominatorService.searchShopTermSets(
+                new ShopSearchQuery().setCommonSearchQueryParams(new CommonSearchQueryParams()));
+        assertNotNull(simpleResponse);
+        assertNotNull(simpleResponse.getContinuationToken());
+        assertNotNull(simpleResponse.getTerms());
+        assertEquals(10, simpleResponse.getTerms().size());
+
         ShopTermSetsResponse partyResponse = dominatorService.searchShopTermSets(
                 new ShopSearchQuery()
                         .setCommonSearchQueryParams(new CommonSearchQueryParams().setLimit(10))
@@ -128,6 +135,14 @@ public class DominatorServiceTest {
             contractDao.save(generateNewContract(partyId, contractId, termsId, true));
             termSetHierarchyDao.save(generateNewTermSetHierarchy(Long.valueOf(i), termsId, true));
         }
+
+        WalletTermSetsResponse emptyRequestResponse = dominatorService.searchWalletTermSets(
+                new WalletSearchQuery()
+                        .setCommonSearchQueryParams(new CommonSearchQueryParams())
+        );
+        assertNotNull(emptyRequestResponse);
+        assertNotNull(emptyRequestResponse.getContinuationToken());
+        assertEquals(10, emptyRequestResponse.getTerms().size());
 
         WalletTermSetsResponse partyResponse = dominatorService.searchWalletTermSets(
                 new WalletSearchQuery()
@@ -197,6 +212,13 @@ public class DominatorServiceTest {
             terminalDao.save(generateNewTerminal(version, terminalId, providerId, true));
             providerDao.save(generateNewPaymentProvider(version, providerId, true));
         }
+
+        TerminalTermSetsResponse simpleResponse = dominatorService.searchTerminalTermSets(
+                new TerminalSearchQuery().setCommonSearchQueryParams(new CommonSearchQueryParams()));
+        assertNotNull(simpleResponse);
+        assertNotNull(simpleResponse.getContinuationToken());
+        assertEquals(10, simpleResponse.getTerms().size());
+
 
         TerminalTermSetsResponse terminalIdsResponse = dominatorService.searchTerminalTermSets(
                 new TerminalSearchQuery()
