@@ -36,10 +36,10 @@ public class DominantService {
 
     private void processOperation(DominantHandler handler, Operation operation, Long versionId) {
         try {
-            log.info("Start to process commit with versionId={} operation={} ",
+            log.debug("Start to process commit with versionId={} operation={} ",
                     versionId, JsonUtil.thriftBaseToJsonString(operation));
             handler.handle(operation, versionId);
-            log.info("End to process commit with versionId={}", versionId);
+            log.debug("End to process commit with versionId={}", versionId);
         } catch (Exception ex) {
             log.error("The error was received when the service processed operation", ex);
             throw ex;
@@ -48,12 +48,12 @@ public class DominantService {
 
     public Optional<Long> getLastVersionId() {
         Optional<Long> lastVersionId = Optional.ofNullable(dominantDao.getLastVersionId());
-        log.info("Last dominant versionId={}", lastVersionId);
+        log.debug("Last dominant versionId={}", lastVersionId);
         return lastVersionId;
     }
 
     public void updateLastVersionId(Long lastVersionId) {
         dominantDao.updateLastVersionId(lastVersionId);
-        log.info("Last dominant versionId={} is updated", lastVersionId);
+        log.trace("Last dominant versionId={} is updated", lastVersionId);
     }
 }

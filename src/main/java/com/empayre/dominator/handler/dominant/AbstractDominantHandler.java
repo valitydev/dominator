@@ -3,32 +3,21 @@ package com.empayre.dominator.handler.dominant;
 import com.empayre.dominator.dao.dominant.iface.DomainObjectDao;
 import dev.vality.damsel.domain.DomainObject;
 import dev.vality.damsel.domain_config.Operation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * @param <T> - damsel object class (CategoryObject, CurrencyObject etc.)
- * @param <C> - jooq object class (Category, Currency etc.)
- * @param <I> - object reference id class (Integer, String etc.)
- */
+@Slf4j
+@Getter
+@Setter
 public abstract class AbstractDominantHandler<T, C, I> implements DominantHandler<Operation> {
-
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private static final String UNKNOWN_TYPE_EX = "Unknown type of operation. Only insert/update/remove supports. " +
             "Operation: ";
 
     private DomainObject domainObject;
-
-    public DomainObject getDomainObject() {
-        return domainObject;
-    }
-
-    public void setDomainObject(DomainObject domainObject) {
-        this.domainObject = domainObject;
-    }
 
     protected abstract DomainObjectDao<C, I> getDomainObjectDao();
 
@@ -73,30 +62,30 @@ public abstract class AbstractDominantHandler<T, C, I> implements DominantHandle
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void insertDomainObject(T object, Long versionId) {
-        log.info("Start to insert '{}' with id={}, versionId={}", object.getClass().getSimpleName(),
+        log.debug("Start to insert '{}' with id={}, versionId={}", object.getClass().getSimpleName(),
                 getTargetObjectRefId(), versionId);
         getDomainObjectDao().save(convertToDatabaseObject(object, versionId, true));
-        log.info("End to insert '{}' with id={}, versionId={}", object.getClass().getSimpleName(),
+        log.debug("End to insert '{}' with id={}, versionId={}", object.getClass().getSimpleName(),
                 getTargetObjectRefId(), versionId);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void updateDomainObject(T object, Long versionId) {
-        log.info("Start to update '{}' with id={}, versionId={}", object.getClass().getSimpleName(),
+        log.debug("Start to update '{}' with id={}, versionId={}", object.getClass().getSimpleName(),
                 getTargetObjectRefId(), versionId);
         getDomainObjectDao().updateNotCurrent(getTargetObjectRefId());
         getDomainObjectDao().save(convertToDatabaseObject(object, versionId, true));
-        log.info("End to update '{}' with id={}, versionId={}", object.getClass().getSimpleName(),
+        log.debug("End to update '{}' with id={}, versionId={}", object.getClass().getSimpleName(),
                 getTargetObjectRefId(), versionId);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void removeDomainObject(T object, Long versionId) {
-        log.info("Start to remove '{}' with id={}, versionId={}", object.getClass().getSimpleName(),
+        log.debug("Start to remove '{}' with id={}, versionId={}", object.getClass().getSimpleName(),
                 getTargetObjectRefId(), versionId);
         getDomainObjectDao().updateNotCurrent(getTargetObjectRefId());
         getDomainObjectDao().save(convertToDatabaseObject(object, versionId, false));
-        log.info("End to remove '{}' with id={}, versionId={}", object.getClass().getSimpleName(),
+        log.debug("End to remove '{}' with id={}, versionId={}", object.getClass().getSimpleName(),
                 getTargetObjectRefId(), versionId);
     }
 }
