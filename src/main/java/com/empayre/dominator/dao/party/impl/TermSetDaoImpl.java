@@ -48,7 +48,7 @@ public class TermSetDaoImpl extends AbstractDao implements TermSetDao {
                 .on(TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_REF_ID.eq(CONTRACT.TERMS_ID).and(TERM_SET_HIERARCHY.CURRENT))
                 .where(condition)
                 .orderBy(SHOP.ID.desc())
-                .limit(limit < 1 ? defaultLimit : limit)
+                .limit(getLimit(limit))
                 .fetch();
         return fetch
                 .map(shopTermSetDataObjectRowMapper);
@@ -69,7 +69,7 @@ public class TermSetDaoImpl extends AbstractDao implements TermSetDao {
                 .on(TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_REF_ID.eq(CONTRACT.TERMS_ID).and(TERM_SET_HIERARCHY.CURRENT))
                 .where(condition)
                 .orderBy(WALLET.ID.desc())
-                .limit(limit < 1 ? defaultLimit : limit)
+                .limit(getLimit(limit))
                 .fetch();
         return fetch
                 .map(walletTermSetDataObjectRowMapper);
@@ -86,9 +86,13 @@ public class TermSetDaoImpl extends AbstractDao implements TermSetDao {
                 .on(TERMINAL.TERMINAL_PROVIDER_REF_ID.eq(PROVIDER.PROVIDER_REF_ID).and(PROVIDER.CURRENT))
                 .where(condition)
                 .orderBy(TERMINAL.ID.desc())
-                .limit(limit < 1 ? defaultLimit : limit)
+                .limit(getLimit(limit))
                 .fetch();
         return fetch
                 .map(terminalTermSetDataObjectRowMapper);
+    }
+
+    private int getLimit(int sourceLimit) {
+        return sourceLimit < 1 ? defaultLimit : sourceLimit;
     }
 }
