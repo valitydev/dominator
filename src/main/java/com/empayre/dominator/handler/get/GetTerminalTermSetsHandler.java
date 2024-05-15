@@ -34,8 +34,9 @@ public class GetTerminalTermSetsHandler implements GetTermSetsHandler<TerminalSe
         TerminalTermSetsResponse response = new TerminalTermSetsResponse()
                 .setTerms(terminalTermSets.stream().map(set -> terminalTermSetConverter.convert(set)).toList())
                 .setContinuationToken(createContinuationToken(terminalTermSets));
-        log.info("Start TerminalTermSets getting (query: {}, terms.size: {}, token: {})",
+        log.info("Finish TerminalTermSets getting (query: {}, terms.size: {}, token: {})",
                 query, response.getTerms().size(), response.getContinuationToken());
+        log.debug("Result TerminalTermSetsResponse: {}", response);
         return response;
     }
 
