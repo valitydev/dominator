@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.empayre.dominator.util.TermSetConverterUtils.replaceNull;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -38,10 +40,10 @@ public class TerminalTermSetConverter implements Converter<TerminalTermSetDataOb
     public TerminalTermSet convert(TerminalTermSetDataObject source) {
         return new TerminalTermSet()
                 .setTerminalId(new TerminalRef(source.getTerminalId()))
-                .setTerminalName(source.getTerminalName())
+                .setTerminalName(replaceNull(source.getTerminalName()))
                 .setProviderId(new ProviderRef(source.getProviderId()))
-                .setProviderName(source.getProviderName())
-                .setCurrency(getCurrency(source.getAccountsJson()))
+                .setProviderName(replaceNull(source.getProviderName()))
+                .setCurrency(replaceNull(getCurrency(source.getAccountsJson())))
                 .setCurrentTermSet(deserializeTermSet(source.getTermSetObject()))
                 .setTermSetHistory(deserializeTermSets(terminalDao.getTreminals(source.getTerminalId())));
     }

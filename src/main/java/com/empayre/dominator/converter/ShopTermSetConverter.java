@@ -16,6 +16,8 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.empayre.dominator.util.TermSetConverterUtils.replaceNull;
+
 @Component
 @RequiredArgsConstructor
 public class ShopTermSetConverter implements Converter<ShopTermSetDataObject, ShopTermSet> {
@@ -26,12 +28,12 @@ public class ShopTermSetConverter implements Converter<ShopTermSetDataObject, Sh
     @Override
     public ShopTermSet convert(ShopTermSetDataObject source) {
         return new ShopTermSet()
-                .setOwnerId(source.getPartyId())
-                .setShopId(source.getShopId())
-                .setContractId(source.getContractId())
-                .setShopName(source.getShopName())
-                .setTermSetName(source.getTermSetName())
-                .setCurrency(source.getCurrency())
+                .setOwnerId(replaceNull(source.getPartyId()))
+                .setShopId(replaceNull(source.getShopId()))
+                .setContractId(replaceNull(source.getContractId()))
+                .setShopName(replaceNull(source.getShopName()))
+                .setTermSetName(replaceNull(source.getTermSetName()))
+                .setCurrency(replaceNull(source.getCurrency()))
                 .setCurrentTermSet(deserializeTermSet(source.getCurrentTermSetHierarchyObject()))
                 .setTermSetHistory(deserializeTermSets(
                         termSetHierarchyDao.getTermSetHierarchyHistory(source.getTermSetId())));

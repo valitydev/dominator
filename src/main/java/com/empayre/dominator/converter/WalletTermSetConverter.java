@@ -17,6 +17,8 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.empayre.dominator.util.TermSetConverterUtils.replaceNull;
+
 @Component
 @RequiredArgsConstructor
 public class WalletTermSetConverter implements Converter<WalletTermSetDataObject, WalletTermSet> {
@@ -29,11 +31,11 @@ public class WalletTermSetConverter implements Converter<WalletTermSetDataObject
         return new WalletTermSet()
                 .setOwnerId(source.getPartyId())
                 .setIdentityId(new IdentityProviderRef().setId(source.getIdentityId()))
-                .setContractId(source.getContractId())
-                .setWalletId(source.getWalletId())
-                .setWalletName(source.getWalletName())
-                .setTermSetName(source.getTermSetName())
-                .setCurrency(source.getCurrency())
+                .setContractId(replaceNull(source.getContractId()))
+                .setWalletId(replaceNull(source.getWalletId()))
+                .setWalletName(replaceNull(source.getWalletName()))
+                .setTermSetName(replaceNull(source.getTermSetName()))
+                .setCurrency(replaceNull(source.getCurrency()))
                 .setCurrentTermSet(deserializeTermSet(source.getCurrentTermSetHierarchyObject()))
                 .setTermSetHistory(deserializeTermSets(
                         termSetHierarchyDao.getTermSetHierarchyHistory(source.getTermSetId())));
