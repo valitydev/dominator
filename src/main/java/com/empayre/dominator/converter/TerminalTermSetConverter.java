@@ -63,7 +63,8 @@ public class TerminalTermSetConverter implements Converter<TerminalTermSetDataOb
             deserializer.deserialize(termSet, object);
             return termSet;
         } catch (TException e) {
-            throw new SerializationException(e);
+            log.error("ProvisionTermSet deserialization exception", e);
+            return new ProvisionTermSet();
         }
     }
 
