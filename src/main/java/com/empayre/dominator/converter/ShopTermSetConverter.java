@@ -3,10 +3,10 @@ package com.empayre.dominator.converter;
 import com.empayre.dominator.dao.party.iface.TermSetHierarchyDao;
 import com.empayre.dominator.data.ShopTermSetDataObject;
 import com.empayre.dominator.domain.tables.pojos.TermSetHierarchy;
-import com.empayre.dominator.exception.SerializationException;
 import dev.vality.damsel.domain.TermSetHierarchyObject;
 import dev.vality.dominator.ShopTermSet;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.thrift.TDeserializer;
 import org.apache.thrift.TException;
 import org.springframework.core.convert.converter.Converter;
@@ -16,8 +16,10 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.empayre.dominator.util.TermSetConverterUtils.createEmptyTermSetHierarchyObject;
 import static com.empayre.dominator.util.TermSetConverterUtils.replaceNull;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class ShopTermSetConverter implements Converter<ShopTermSetDataObject, ShopTermSet> {
@@ -48,13 +50,14 @@ public class ShopTermSetConverter implements Converter<ShopTermSetDataObject, Sh
     private TermSetHierarchyObject deserializeTermSet(byte[] object) {
         try {
             if (object == null || object.length == 0) {
-                return new TermSetHierarchyObject();
+                return createEmptyTermSetHierarchyObject();
             }
             TermSetHierarchyObject termSetHierarchyObject = new TermSetHierarchyObject();
             deserializer.deserialize(termSetHierarchyObject, object);
             return termSetHierarchyObject;
         } catch (TException e) {
-            throw new SerializationException(e);
+            log.error("TermSetHierarchyObject deserialization exception", e);
+            return createEmptyTermSetHierarchyObject();
         }
     }
 }
