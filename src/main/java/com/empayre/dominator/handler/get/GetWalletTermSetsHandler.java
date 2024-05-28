@@ -40,7 +40,7 @@ public class GetWalletTermSetsHandler implements GetTermSetsHandler<WalletSearch
     }
 
     private String createContinuationToken(List<WalletTermSetDataObject> walletTermSets, int limit) {
-        return CollectionUtils.isEmpty(walletTermSets) || walletTermSets.size() > limit
+        return CollectionUtils.isEmpty(walletTermSets) || walletTermSets.size() < limit
                 ? null : String.valueOf(walletTermSets.get(walletTermSets.size() - 1).getId());
     }
 }
