@@ -29,7 +29,9 @@ public class ContractAdjustmentDaoImpl extends AbstractDao implements ContractAd
                                 .insertInto(CONTRACT_ADJUSTMENT)
                                 .set(contractAdjustmentRecord))
                 .collect(Collectors.toList());
-        getDslContext().batch(queries).execute();
+        getDslContext()
+                .batch(queries)
+                .execute();
     }
 
     @Override
@@ -40,5 +42,15 @@ public class ContractAdjustmentDaoImpl extends AbstractDao implements ContractAd
                 .orderBy(CONTRACT_ADJUSTMENT.ID.asc())
                 .fetch()
                 .into(ContractAdjustment.class);
+    }
+
+    @Override
+    public ContractAdjustment getLastByContractId(Long contractId) throws DaoException {
+        return getDslContext()
+                .selectFrom(CONTRACT_ADJUSTMENT)
+                .where(CONTRACT_ADJUSTMENT.CONTRACT_ID.eq(contractId))
+                .orderBy(CONTRACT_ADJUSTMENT.ID.desc())
+                .limit(1)
+                .fetchOneInto(ContractAdjustment.class);
     }
 }

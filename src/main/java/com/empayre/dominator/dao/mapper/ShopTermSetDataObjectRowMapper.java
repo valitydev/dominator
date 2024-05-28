@@ -18,9 +18,7 @@ public class ShopTermSetDataObjectRowMapper implements RecordMapper<Record, Shop
                 .currency(record.get(SHOP.ACCOUNT_CURRENCY_CODE))
                 .shopName(record.get(SHOP.DETAILS_NAME))
                 .termSetId(record.get(CONTRACT.TERMS_ID))
-                .termSetName(record.get(TERM_SET_HIERARCHY.NAME))
-                .currentTermSetJson(record.get(TERM_SET_HIERARCHY.TERM_SETS_JSON))
-                .currentTermSetHierarchyObject(record.get(TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_OBJECT))
+                .contractRecordId(record.get(CONTRACT.ID))
                 .build();
     }
 }

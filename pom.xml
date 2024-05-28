@@ -155,7 +155,7 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>dominator-proto</artifactId>
-            <version>1.4-68a8678</version>
+            <version>1.5-b9788c2</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>

@@ -1,22 +1,14 @@
 package com.empayre.dominator.converter;
 
-import com.empayre.dominator.dao.party.iface.TermSetHierarchyDao;
 import com.empayre.dominator.data.ShopTermSetDataObject;
 import com.empayre.dominator.domain.tables.pojos.TermSetHierarchy;
-import dev.vality.damsel.domain.TermSetHierarchyObject;
+import com.empayre.dominator.service.TermSetGettingService;
 import dev.vality.dominator.ShopTermSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.thrift.TDeserializer;
-import org.apache.thrift.TException;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.empayre.dominator.util.TermSetConverterUtils.createEmptyTermSetHierarchyObject;
 import static com.empayre.dominator.util.TermSetConverterUtils.replaceNull;
 
 @Slf4j
@@ -24,40 +16,22 @@ import static com.empayre.dominator.util.TermSetConverterUtils.replaceNull;
 @RequiredArgsConstructor
 public class ShopTermSetConverter implements Converter<ShopTermSetDataObject, ShopTermSet> {
 
-    private final TDeserializer deserializer;
-    private final TermSetHierarchyDao termSetHierarchyDao;
+    private final TermSetGettingService termSetGettingService;
 
     @Override
     public ShopTermSet convert(ShopTermSetDataObject source) {
+        Long contractRecordId = source.getContractRecordId();
+        TermSetHierarchy currentTermSet =
+                termSetGettingService.getCurrentTermSet(contractRecordId, source.getTermSetId());
         return new ShopTermSet()
                 .setOwnerId(replaceNull(source.getPartyId()))
                 .setShopId(replaceNull(source.getShopId()))
                 .setContractId(replaceNull(source.getContractId()))
                 .setShopName(replaceNull(source.getShopName()))
-                .setTermSetName(replaceNull(source.getTermSetName()))
+                .setTermSetName(replaceNull(currentTermSet.getName()))
                 .setCurrency(replaceNull(source.getCurrency()))
-                .setCurrentTermSet(deserializeTermSet(source.getCurrentTermSetHierarchyObject()))
-                .setTermSetHistory(deserializeTermSets(
-                        termSetHierarchyDao.getTermSetHierarchyHistory(source.getTermSetId())));
-    }
-
-    private List<TermSetHierarchyObject> deserializeTermSets(List<TermSetHierarchy> termSetHierarchies) {
-        return CollectionUtils.isEmpty(termSetHierarchies) ? new ArrayList<>() : termSetHierarchies.stream()
-                .map(termSet -> deserializeTermSet(termSet.getTermSetHierarchyObject()))
-                .toList();
-    }
-
-    private TermSetHierarchyObject deserializeTermSet(byte[] object) {
-        try {
-            if (object == null || object.length == 0) {
-                return createEmptyTermSetHierarchyObject();
-            }
-            TermSetHierarchyObject termSetHierarchyObject = new TermSetHierarchyObject();
-            deserializer.deserialize(termSetHierarchyObject, object);
-            return termSetHierarchyObject;
-        } catch (TException e) {
-            log.error("TermSetHierarchyObject deserialization exception", e);
-            return createEmptyTermSetHierarchyObject();
-        }
+                .setCurrentTermSet(
+                        termSetGettingService.getTermSetFromObject(currentTermSet.getTermSetHierarchyObject()))
+                .setTermSetHistory(termSetGettingService.getTermSetHistory(contractRecordId));
     }
 }

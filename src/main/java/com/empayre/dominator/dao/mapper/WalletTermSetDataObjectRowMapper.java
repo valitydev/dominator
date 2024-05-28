@@ -19,9 +19,7 @@ public class WalletTermSetDataObjectRowMapper implements RecordMapper<Record, Wa
                 .walletId(record.get(WALLET.WALLET_ID))
                 .walletName(record.get(WALLET.WALLET_NAME))
                 .termSetId(record.get(CONTRACT.TERMS_ID))
-                .termSetName(record.get(TERM_SET_HIERARCHY.NAME))
-                .currentTermSetJson(record.get(TERM_SET_HIERARCHY.TERM_SETS_JSON))
-                .currentTermSetHierarchyObject(record.get(TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_OBJECT))
+                .contractRecordId(record.get(CONTRACT.ID))
                 .build();
     }
 }

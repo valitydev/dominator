@@ -59,6 +59,9 @@ public class DaoTests {
     @Test
     public void dominantDaoTest() {
         Provider provider = RandomBeans.random(Provider.class);
+        provider.setTerminalObject(new byte[0]);
+        provider.setWalletTermsObject(new byte[0]);
+        provider.setPaymentTermsObject(new byte[0]);
         provider.setCurrent(true);
         providerDao.save(provider);
         providerDao.updateNotCurrent(provider.getProviderRefId());

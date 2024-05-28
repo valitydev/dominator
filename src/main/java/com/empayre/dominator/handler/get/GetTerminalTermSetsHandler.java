@@ -26,22 +26,21 @@ public class GetTerminalTermSetsHandler implements GetTermSetsHandler<TerminalSe
     @Override
     public TerminalTermSetsResponse handle(TerminalSearchQuery query) {
         log.info("Start TerminalTermSets getting (query: {})", query);
-        List<TerminalTermSetDataObject> terminalTermSets = termSetDao.getTerminalTermSets(
-                createTerminalCondition(query),
-                query.getCommonSearchQueryParams().getLimit()
-        );
+        int limit = query.getCommonSearchQueryParams().getLimit();
+        List<TerminalTermSetDataObject> terminalTermSets =
+                termSetDao.getTerminalTermSets(createTerminalCondition(query), limit);
 
         TerminalTermSetsResponse response = new TerminalTermSetsResponse()
                 .setTerms(terminalTermSets.stream().map(set -> terminalTermSetConverter.convert(set)).toList())
-                .setContinuationToken(createContinuationToken(terminalTermSets));
+                .setContinuationToken(createContinuationToken(terminalTermSets, limit));
         log.info("Finish TerminalTermSets getting (query: {}, terms.size: {}, token: {})",
                 query, response.getTerms().size(), response.getContinuationToken());
         log.debug("Result TerminalTermSetsResponse: {}", response);
         return response;
     }
 
-    private String createContinuationToken(List<TerminalTermSetDataObject> terminalTermSets) {
-        return CollectionUtils.isEmpty(terminalTermSets)
+    private String createContinuationToken(List<TerminalTermSetDataObject> terminalTermSets, int limit) {
+        return CollectionUtils.isEmpty(terminalTermSets) || terminalTermSets.size() < limit
                 ? null : String.valueOf(terminalTermSets.get(terminalTermSets.size() - 1).getId());
     }
 }

@@ -14,7 +14,5 @@ public class ShopTermSetDataObject {
     private String currency;
     private String shopName;
     private Integer termSetId;
-    private String termSetName;
-    private String currentTermSetJson;
-    private byte[] currentTermSetHierarchyObject;
+    private Long contractRecordId;
 }

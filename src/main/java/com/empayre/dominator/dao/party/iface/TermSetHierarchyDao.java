@@ -12,5 +12,9 @@ public interface TermSetHierarchyDao extends DomainObjectDao<TermSetHierarchy, I
 
     void updateNotCurrent(Integer termSetHierarchyId) throws DaoException;
 
-    List<TermSetHierarchy> getTermSetHierarchyHistory(Integer refId);
+    TermSetHierarchy getCurrentTermSet(Integer refId);
+
+    List<TermSetHierarchy> getTermSetHierarchyHistory(Integer refId, boolean current);
+
+    byte[] getTermSetHierarchyObject(Integer refId, boolean current);
 }

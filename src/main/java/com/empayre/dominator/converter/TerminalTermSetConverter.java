@@ -3,12 +3,12 @@ package com.empayre.dominator.converter;
 import com.empayre.dominator.dao.dominant.iface.TerminalDao;
 import com.empayre.dominator.data.TerminalTermSetDataObject;
 import com.empayre.dominator.domain.tables.pojos.Terminal;
-import com.empayre.dominator.exception.SerializationException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import dev.vality.damsel.domain.ProviderRef;
 import dev.vality.damsel.domain.ProvisionTermSet;
 import dev.vality.damsel.domain.TerminalRef;
+import dev.vality.dominator.ProvisionTermSetHistory;
 import dev.vality.dominator.TerminalTermSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,9 +48,10 @@ public class TerminalTermSetConverter implements Converter<TerminalTermSetDataOb
                 .setTermSetHistory(deserializeTermSets(terminalDao.getTreminals(source.getTerminalId())));
     }
 
-    private List<ProvisionTermSet> deserializeTermSets(List<Terminal> termSetHierarchies) {
+    private List<ProvisionTermSetHistory> deserializeTermSets(List<Terminal> termSetHierarchies) {
         return CollectionUtils.isEmpty(termSetHierarchies) ? new ArrayList<>() : termSetHierarchies.stream()
-                .map(terminal -> deserializeTermSet(terminal.getTermsObject()))
+                .map(terminal -> new ProvisionTermSetHistory()
+                        .setTermSet(deserializeTermSet(terminal.getTermsObject())))
                 .toList();
     }
 

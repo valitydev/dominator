@@ -26,22 +26,20 @@ public class GetShopTermSetsHandler implements GetTermSetsHandler<ShopSearchQuer
     @Override
     public ShopTermSetsResponse handle(ShopSearchQuery query) {
         log.info("Start ShopTermSets getting (query: {})", query);
-        List<ShopTermSetDataObject> shopTermSets = termSetDao.getShopTermSets(
-                createShopCondition(query),
-                query.getCommonSearchQueryParams().getLimit()
-        );
+        int limit = query.getCommonSearchQueryParams().getLimit();
+        List<ShopTermSetDataObject> shopTermSets = termSetDao.getShopTermSets(createShopCondition(query), limit);
 
         ShopTermSetsResponse response = new ShopTermSetsResponse()
                 .setTerms(shopTermSets.stream().map(termSet -> shopTermSetConverter.convert(termSet)).toList())
-                .setContinuationToken(createContinuationToken(shopTermSets));
+                .setContinuationToken(createContinuationToken(shopTermSets, limit));
         log.info("Finish ShopTermSets getting (query: {}, terms.size: {}, token: {})",
                 query, response.getTerms().size(), response.getContinuationToken());
         log.debug("Result ShopTermSetsResponse: {}", response);
         return response;
     }
 
-    private String createContinuationToken(List<ShopTermSetDataObject> shopTermSets) {
-        return CollectionUtils.isEmpty(shopTermSets)
+    private String createContinuationToken(List<ShopTermSetDataObject> shopTermSets, int limit) {
+        return CollectionUtils.isEmpty(shopTermSets) || shopTermSets.size() < limit
                 ? null : String.valueOf(shopTermSets.get(shopTermSets.size() - 1).getId());
     }
 }
