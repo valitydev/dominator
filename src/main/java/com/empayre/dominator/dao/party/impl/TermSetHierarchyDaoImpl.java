@@ -43,12 +43,32 @@ public class TermSetHierarchyDaoImpl extends AbstractDao implements TermSetHiera
     }
 
     @Override
-    public List<TermSetHierarchy> getTermSetHierarchyHistory(Integer refId) {
+    public TermSetHierarchy getCurrentTermSet(Integer refId) {
         return getDslContext()
                 .selectFrom(TERM_SET_HIERARCHY)
                 .where(TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_REF_ID.eq(refId))
-                .and(TERM_SET_HIERARCHY.CURRENT.isFalse())
+                .and(TERM_SET_HIERARCHY.CURRENT.isTrue())
+                .orderBy(TERM_SET_HIERARCHY.ID.desc())
+                .fetchOneInto(TermSetHierarchy.class);
+    }
+
+    @Override
+    public List<TermSetHierarchy> getTermSetHierarchyHistory(Integer refId, boolean current) {
+        return getDslContext()
+                .selectFrom(TERM_SET_HIERARCHY)
+                .where(TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_REF_ID.eq(refId))
+                .and(TERM_SET_HIERARCHY.CURRENT.eq(current))
                 .orderBy(TERM_SET_HIERARCHY.ID.desc())
                 .fetchInto(TermSetHierarchy.class);
+    }
+
+    public byte[] getTermSetHierarchyObject(Integer refId, boolean current) {
+        return getDslContext()
+                .select(TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_OBJECT)
+                .from(TERM_SET_HIERARCHY)
+                .where(TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_REF_ID.eq(refId))
+                .and(TERM_SET_HIERARCHY.CURRENT.eq(current))
+                .fetchOne()
+                .value1();
     }
 }

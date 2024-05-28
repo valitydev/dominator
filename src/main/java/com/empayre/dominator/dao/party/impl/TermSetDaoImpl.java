@@ -39,8 +39,7 @@ public class TermSetDaoImpl extends AbstractDao implements TermSetDao {
     public List<ShopTermSetDataObject> getShopTermSets(Condition condition, int limit) {
         var fetch = getDslContext()
                 .select(SHOP.ID, SHOP.PARTY_ID, SHOP.SHOP_ID, SHOP.CONTRACT_ID, SHOP.ACCOUNT_CURRENCY_CODE,
-                        SHOP.DETAILS_NAME, CONTRACT.TERMS_ID, TERM_SET_HIERARCHY.NAME,
-                        TERM_SET_HIERARCHY.TERM_SETS_JSON, TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_OBJECT)
+                        SHOP.DETAILS_NAME, CONTRACT.TERMS_ID, CONTRACT.ID)
                 .from(SHOP)
                 .join(CONTRACT)
                 .on(CONTRACT.CONTRACT_ID.eq(SHOP.CONTRACT_ID).and(CONTRACT.CURRENT))
@@ -58,8 +57,7 @@ public class TermSetDaoImpl extends AbstractDao implements TermSetDao {
     public List<WalletTermSetDataObject> getWalletTermSets(Condition condition, int limit) {
         var fetch = getDslContext()
                 .select(WALLET.PARTY_ID, WALLET.IDENTITY_ID, IDENTITY.PARTY_CONTRACT_ID, WALLET.CURRENCY_CODE,
-                        WALLET.WALLET_ID, WALLET.WALLET_NAME, CONTRACT.TERMS_ID, TERM_SET_HIERARCHY.NAME,
-                        TERM_SET_HIERARCHY.TERM_SETS_JSON, WALLET.ID, TERM_SET_HIERARCHY.TERM_SET_HIERARCHY_OBJECT)
+                        WALLET.WALLET_ID, WALLET.WALLET_NAME, CONTRACT.TERMS_ID, CONTRACT.ID, WALLET.ID)
                 .from(WALLET)
                 .join(IDENTITY)
                 .on(WALLET.IDENTITY_ID.eq(IDENTITY.IDENTITY_ID).and(IDENTITY.CURRENT))

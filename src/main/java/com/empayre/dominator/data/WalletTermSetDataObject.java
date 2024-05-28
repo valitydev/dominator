@@ -15,7 +15,5 @@ public class WalletTermSetDataObject {
     private String walletId;
     private String walletName;
     private Integer termSetId;
-    private String termSetName;
-    private String currentTermSetJson;
-    private byte[] currentTermSetHierarchyObject;
+    private Long contractRecordId;
 }

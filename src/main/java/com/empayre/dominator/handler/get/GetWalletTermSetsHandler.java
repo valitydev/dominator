@@ -26,22 +26,21 @@ public class GetWalletTermSetsHandler implements GetTermSetsHandler<WalletSearch
     @Override
     public WalletTermSetsResponse handle(WalletSearchQuery query) {
         log.info("Start WalletTermSets getting (query: {})", query);
-        List<WalletTermSetDataObject> walletTermSets = termSetDao.getWalletTermSets(
-                createWalletCondition(query),
-                query.getCommonSearchQueryParams().getLimit()
-        );
+        int limit = query.getCommonSearchQueryParams().getLimit();
+        List<WalletTermSetDataObject> walletTermSets =
+                termSetDao.getWalletTermSets(createWalletCondition(query), limit);
 
         WalletTermSetsResponse response = new WalletTermSetsResponse()
                 .setTerms(walletTermSets.stream().map(set -> walletTermSetConverter.convert(set)).toList())
-                .setContinuationToken(createContinuationToken(walletTermSets));
+                .setContinuationToken(createContinuationToken(walletTermSets, limit));
         log.info("Finish WalletTermSets getting (query: {}, terms.size: {}, token: {})",
                 query, response.getTerms().size(), response.getContinuationToken());
         log.debug("Result WalletTermSetsResponse: {}", response);
         return response;
     }
 
-    private String createContinuationToken(List<WalletTermSetDataObject> walletTermSets) {
-        return CollectionUtils.isEmpty(walletTermSets)
+    private String createContinuationToken(List<WalletTermSetDataObject> walletTermSets, int limit) {
+        return CollectionUtils.isEmpty(walletTermSets) || walletTermSets.size() > limit
                 ? null : String.valueOf(walletTermSets.get(walletTermSets.size() - 1).getId());
     }
 }

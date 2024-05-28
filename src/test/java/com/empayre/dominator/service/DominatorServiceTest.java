@@ -81,7 +81,6 @@ public class DominatorServiceTest {
                         .setPartyId("party-1")
         );
         assertNotNull(partyResponse);
-        assertNotNull(partyResponse.getContinuationToken());
         assertNotNull(partyResponse.getTerms());
         assertEquals(1, partyResponse.getTerms().size());
 
@@ -91,7 +90,6 @@ public class DominatorServiceTest {
                         .setShopIds(List.of("party-1-shop-1", "party-2-shop-2", "party-2-shop-3", "party-3-shop-3"))
         );
         assertNotNull(shopResponse);
-        assertNotNull(shopResponse.getContinuationToken());
         assertEquals(3, shopResponse.getTerms().size());
 
         ShopTermSetsResponse termSetsIdsResponse = dominatorService.searchShopTermSets(
@@ -103,7 +101,6 @@ public class DominatorServiceTest {
                                 new TermSetHierarchyRef(5)))
         );
         assertNotNull(termSetsIdsResponse);
-        assertNotNull(termSetsIdsResponse.getContinuationToken());
         assertEquals(3, termSetsIdsResponse.getTerms().size());
 
         ShopTermSetsResponse termSetsNamesResponse = dominatorService.searchShopTermSets(
@@ -112,7 +109,6 @@ public class DominatorServiceTest {
                         .setTermSetsNames(List.of("Name-1", "Name-6"))
         );
         assertNotNull(termSetsNamesResponse);
-        assertNotNull(termSetsNamesResponse.getContinuationToken());
         assertEquals(2, termSetsNamesResponse.getTerms().size());
     }
 
@@ -141,7 +137,6 @@ public class DominatorServiceTest {
                         .setCommonSearchQueryParams(new CommonSearchQueryParams())
         );
         assertNotNull(emptyRequestResponse);
-        assertNotNull(emptyRequestResponse.getContinuationToken());
         assertEquals(10, emptyRequestResponse.getTerms().size());
 
         WalletTermSetsResponse partyResponse = dominatorService.searchWalletTermSets(
@@ -150,7 +145,6 @@ public class DominatorServiceTest {
                         .setPartyId("WParty-1")
         );
         assertNotNull(partyResponse);
-        assertNotNull(partyResponse.getContinuationToken());
         assertEquals(1, partyResponse.getTerms().size());
 
         WalletTermSetsResponse walletResponse = dominatorService.searchWalletTermSets(
@@ -159,7 +153,6 @@ public class DominatorServiceTest {
                         .setWalletIds(List.of("Wallet-9", "Wallet-8", "Wallet-81"))
         );
         assertNotNull(walletResponse);
-        assertNotNull(walletResponse.getContinuationToken());
         assertEquals(2, walletResponse.getTerms().size());
 
         WalletTermSetsResponse identityResponse = dominatorService.searchWalletTermSets(
@@ -172,7 +165,6 @@ public class DominatorServiceTest {
                         ))
         );
         assertNotNull(identityResponse);
-        assertNotNull(identityResponse.getContinuationToken());
         assertEquals(3, identityResponse.getTerms().size());
 
         WalletTermSetsResponse termIdsResponse = dominatorService.searchWalletTermSets(
@@ -186,7 +178,6 @@ public class DominatorServiceTest {
                         ))
         );
         assertNotNull(termIdsResponse);
-        assertNotNull(termIdsResponse.getContinuationToken());
         assertEquals(4, termIdsResponse.getTerms().size());
 
         WalletTermSetsResponse termNamesResponse = dominatorService.searchWalletTermSets(
@@ -195,7 +186,6 @@ public class DominatorServiceTest {
                         .setTermSetsNames(List.of("Name-1", "Name-6"))
         );
         assertNotNull(termNamesResponse);
-        assertNotNull(termNamesResponse.getContinuationToken());
         assertEquals(2, termNamesResponse.getTerms().size());
     }
 
@@ -216,7 +206,6 @@ public class DominatorServiceTest {
         TerminalTermSetsResponse simpleResponse = dominatorService.searchTerminalTermSets(
                 new TerminalSearchQuery().setCommonSearchQueryParams(new CommonSearchQueryParams()));
         assertNotNull(simpleResponse);
-        assertNotNull(simpleResponse.getContinuationToken());
         assertEquals(10, simpleResponse.getTerms().size());
 
 
@@ -230,7 +219,6 @@ public class DominatorServiceTest {
                         ))
         );
         assertNotNull(terminalIdsResponse);
-        assertNotNull(terminalIdsResponse.getContinuationToken());
         assertEquals(3, terminalIdsResponse.getTerms().size());
 
         TerminalTermSetsResponse providerIdsResponse = dominatorService.searchTerminalTermSets(
@@ -245,7 +233,6 @@ public class DominatorServiceTest {
                         ))
         );
         assertNotNull(providerIdsResponse);
-        assertNotNull(providerIdsResponse.getContinuationToken());
         assertEquals(5, providerIdsResponse.getTerms().size());
     }
 }

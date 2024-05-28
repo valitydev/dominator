@@ -1,10 +1,13 @@
 package com.empayre.dominator.converter;
 
+import com.empayre.dominator.dao.party.iface.ContractAdjustmentDao;
 import com.empayre.dominator.dao.party.iface.TermSetHierarchyDao;
 import com.empayre.dominator.data.WalletTermSetDataObject;
+import com.empayre.dominator.domain.tables.pojos.ContractAdjustment;
 import com.empayre.dominator.domain.tables.pojos.TermSetHierarchy;
 import dev.vality.damsel.domain.IdentityProviderRef;
 import dev.vality.damsel.domain.TermSetHierarchyObject;
+import dev.vality.dominator.TermSetHistory;
 import dev.vality.dominator.WalletTermSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,9 +15,7 @@ import org.apache.thrift.TDeserializer;
 import org.apache.thrift.TException;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.empayre.dominator.util.TermSetConverterUtils.createEmptyTermSetHierarchyObject;
@@ -27,25 +28,34 @@ public class WalletTermSetConverter implements Converter<WalletTermSetDataObject
 
     private final TDeserializer deserializer;
     private final TermSetHierarchyDao termSetHierarchyDao;
+    private final ContractAdjustmentDao contractAdjustmentDao;
 
     @Override
     public WalletTermSet convert(WalletTermSetDataObject source) {
+        Long contractRecordId = source.getContractRecordId();
+        ContractAdjustment lastAdjustment = contractAdjustmentDao.getLastByContractId(contractRecordId);
+        Integer currentTermSetId = lastAdjustment == null ? source.getTermSetId() : lastAdjustment.getTermsId();
+        TermSetHierarchy currentTermSet = termSetHierarchyDao.getCurrentTermSet(currentTermSetId);
         return new WalletTermSet()
                 .setOwnerId(source.getPartyId())
                 .setIdentityId(new IdentityProviderRef().setId(source.getIdentityId()))
                 .setContractId(replaceNull(source.getContractId()))
                 .setWalletId(replaceNull(source.getWalletId()))
                 .setWalletName(replaceNull(source.getWalletName()))
-                .setTermSetName(replaceNull(source.getTermSetName()))
+                .setTermSetName(replaceNull(currentTermSet.getName()))
                 .setCurrency(replaceNull(source.getCurrency()))
-                .setCurrentTermSet(deserializeTermSet(source.getCurrentTermSetHierarchyObject()))
-                .setTermSetHistory(deserializeTermSets(
-                        termSetHierarchyDao.getTermSetHierarchyHistory(source.getTermSetId())));
+                .setCurrentTermSet(deserializeTermSet(currentTermSet.getTermSetHierarchyObject()))
+                .setTermSetHistory(getTermSetHistory(contractRecordId));
     }
 
-    private List<TermSetHierarchyObject> deserializeTermSets(List<TermSetHierarchy> termSetHierarchies) {
-        return CollectionUtils.isEmpty(termSetHierarchies) ? new ArrayList<>() : termSetHierarchies.stream()
-                .map(termSet -> deserializeTermSet(termSet.getTermSetHierarchyObject()))
+    private List<TermSetHistory> getTermSetHistory(long contractRecordId) {
+        return contractAdjustmentDao.getByContractId(contractRecordId).stream()
+                .map(
+                        adj -> new TermSetHistory()
+                                .setTermSet(deserializeTermSet(
+                                        termSetHierarchyDao.getTermSetHierarchyObject(adj.getTermsId(), true)))
+                                .setAppliedAt(adj.getCreatedAt().toString())
+                )
                 .toList();
     }
 
