@@ -49,7 +49,6 @@ public class PartyCreatedHandler implements PartyManagementHandler {
         party.setPartyId(partyId);
         party.setContactInfoEmail(partyCreated.getContactInfo().getRegistrationEmail());
         party.setName(partyCreated.getPartyName());
-        party.setContactInfoEmail(partyCreated.getContactInfo().getRegistrationEmail());
         List<String> managerContactEmails = partyCreated.getContactInfo().getManagerContactEmails();
         party.setManagerContactEmails(StringUtils.collectionToDelimitedString(managerContactEmails, ","));
         LocalDateTime partyCreatedAt = TypeUtil.stringToLocalDateTime(partyCreated.getCreatedAt());
