@@ -13,6 +13,7 @@ import org.apache.thrift.TException;
 import org.apache.thrift.TSerializer;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,9 +48,11 @@ public class TermSetHierarchyHandler
     @Override
     public TermSetHierarchy convertToDatabaseObject(TermSetHierarchyObject termSetHierarchyObject,
                                                     Long versionId,
+                                                    LocalDateTime createdAt,
                                                     boolean current) {
         TermSetHierarchy termSetHierarchy = new TermSetHierarchy();
         termSetHierarchy.setVersionId(versionId);
+        termSetHierarchy.setCreatedAt(createdAt);
         termSetHierarchy.setTermSetHierarchyRefId(getTargetObjectRefId());
         dev.vality.damsel.domain.TermSetHierarchy data = termSetHierarchyObject.getData();
         termSetHierarchy.setName(data.getName());

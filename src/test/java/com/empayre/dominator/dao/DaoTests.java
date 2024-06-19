@@ -62,6 +62,8 @@ public class DaoTests {
         provider.setTerminalObject(new byte[0]);
         provider.setWalletTermsObject(new byte[0]);
         provider.setPaymentTermsObject(new byte[0]);
+        provider.setRecurrentPaytoolTermsObject(new byte[0]);
+        provider.setParamsSchemaObject(new byte[0][0]);
         provider.setCurrent(true);
         providerDao.save(provider);
         providerDao.updateNotCurrent(provider.getProviderRefId());

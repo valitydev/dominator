@@ -5,12 +5,14 @@ import com.empayre.dominator.handler.dominant.DominantHandler;
 import com.empayre.dominator.util.JsonUtil;
 import dev.vality.damsel.domain_config.Commit;
 import dev.vality.damsel.domain_config.Operation;
+import dev.vality.geck.common.util.TypeUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,19 +28,24 @@ public class DominantService {
 
     @Transactional(propagation = Propagation.REQUIRED)
     public void processCommit(long versionId, Map.Entry<Long, Commit> entry) {
-        List<Operation> operations = entry.getValue().getOps();
-        operations.forEach(operation -> handlers.forEach(handler -> {
+        Commit commit = entry.getValue();
+        LocalDateTime createdAt = commit.getCreatedAt() == null
+                ? null : TypeUtil.stringToLocalDateTime(commit.getCreatedAt());
+        commit.getOps().forEach(operation -> handlers.forEach(handler -> {
             if (handler.acceptAndSet(operation)) {
-                processOperation(handler, operation, versionId);
+                processOperation(handler, operation, createdAt, versionId);
             }
         }));
     }
 
-    private void processOperation(DominantHandler handler, Operation operation, Long versionId) {
+    private void processOperation(DominantHandler handler,
+                                  Operation operation,
+                                  LocalDateTime createdAt,
+                                  Long versionId) {
         try {
             log.debug("Start to process commit with versionId={} operation={} ",
                     versionId, JsonUtil.thriftBaseToJsonString(operation));
-            handler.handle(operation, versionId);
+            handler.handle(operation, createdAt, versionId);
             log.debug("End to process commit with versionId={}", versionId);
         } catch (Exception ex) {
             log.error("The error was received when the service processed operation", ex);

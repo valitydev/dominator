@@ -12,7 +12,6 @@ import dev.vality.dominator.ProvisionTermSetHistory;
 import dev.vality.dominator.TerminalTermSet;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.Strings;
 import org.apache.thrift.TDeserializer;
 import org.apache.thrift.TException;
 import org.springframework.core.convert.converter.Converter;
@@ -23,7 +22,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.empayre.dominator.util.TermSetConverterUtils.replaceNull;
 
@@ -34,7 +32,6 @@ public class TerminalTermSetConverter implements Converter<TerminalTermSetDataOb
 
     private final TDeserializer deserializer;
     private final TerminalDao terminalDao;
-    private static final String DELIMITER = ", ";
 
     @Override
     public TerminalTermSet convert(TerminalTermSetDataObject source) {
@@ -43,7 +40,7 @@ public class TerminalTermSetConverter implements Converter<TerminalTermSetDataOb
                 .setTerminalName(replaceNull(source.getTerminalName()))
                 .setProviderId(new ProviderRef(source.getProviderId()))
                 .setProviderName(replaceNull(source.getProviderName()))
-                .setCurrency(replaceNull(getCurrency(source.getAccountsJson())))
+                .setCurrencies(getCurrencies(source.getAccountsJson()))
                 .setCurrentTermSet(deserializeTermSet(source.getTermSetObject()))
                 .setTermSetHistory(deserializeTermSets(terminalDao.getTreminals(source.getTerminalId())));
     }
@@ -51,7 +48,8 @@ public class TerminalTermSetConverter implements Converter<TerminalTermSetDataOb
     private List<ProvisionTermSetHistory> deserializeTermSets(List<Terminal> termSetHierarchies) {
         return CollectionUtils.isEmpty(termSetHierarchies) ? new ArrayList<>() : termSetHierarchies.stream()
                 .map(terminal -> new ProvisionTermSetHistory()
-                        .setTermSet(deserializeTermSet(terminal.getTermsObject())))
+                        .setTermSet(deserializeTermSet(terminal.getTermsObject()))
+                        .setAppliedAt(terminal.getCreatedAt() == null ? null : terminal.getCreatedAt().toString()))
                 .toList();
     }
 
@@ -69,14 +67,13 @@ public class TerminalTermSetConverter implements Converter<TerminalTermSetDataOb
         }
     }
 
-    private String getCurrency(String accountsJson) {
+    private List<String> getCurrencies(String accountsJson) {
         try {
             Map<String, Long> map = new ObjectMapper().readValue(accountsJson, HashMap.class);
-            return map.keySet().stream()
-                    .collect(Collectors.joining(DELIMITER));
+            return new ArrayList<>(map.keySet());
         } catch (JsonProcessingException e) {
             log.error("Currency extraction error", e);
-            return Strings.EMPTY;
+            return new ArrayList<>();
         }
     }
 }

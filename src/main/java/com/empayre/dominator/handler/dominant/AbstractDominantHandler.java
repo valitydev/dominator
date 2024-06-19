@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @Slf4j
 @Getter
 @Setter
@@ -27,18 +29,18 @@ public abstract class AbstractDominantHandler<T, C, I> implements DominantHandle
 
     protected abstract boolean acceptDomainObject();
 
-    public abstract C convertToDatabaseObject(T object, Long versionId, boolean current);
+    public abstract C convertToDatabaseObject(T object, Long versionId, LocalDateTime createdAt, boolean current);
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void handle(Operation operation, Long versionId) {
+    public void handle(Operation operation, LocalDateTime createdAt, Long versionId) {
         T object = getTargetObject();
         if (operation.isSetInsert()) {
-            insertDomainObject(object, versionId);
+            insertDomainObject(object, createdAt, versionId);
         } else if (operation.isSetUpdate()) {
-            updateDomainObject(object, versionId);
+            updateDomainObject(object, createdAt, versionId);
         } else if (operation.isSetRemove()) {
-            removeDomainObject(object, versionId);
+            removeDomainObject(object, createdAt, versionId);
         } else {
             throw new IllegalStateException(
                     UNKNOWN_TYPE_EX + operation);
@@ -61,31 +63,31 @@ public abstract class AbstractDominantHandler<T, C, I> implements DominantHandle
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public void insertDomainObject(T object, Long versionId) {
-        log.debug("Start to insert '{}' with id={}, versionId={}", object.getClass().getSimpleName(),
-                getTargetObjectRefId(), versionId);
-        getDomainObjectDao().save(convertToDatabaseObject(object, versionId, true));
-        log.debug("End to insert '{}' with id={}, versionId={}", object.getClass().getSimpleName(),
-                getTargetObjectRefId(), versionId);
+    public void insertDomainObject(T object, LocalDateTime createdAt, Long versionId) {
+        log.debug("Start to insert '{}' (id={}, versionId={}, createdAt={})", object.getClass().getSimpleName(),
+                getTargetObjectRefId(), versionId, createdAt);
+        getDomainObjectDao().save(convertToDatabaseObject(object, versionId, createdAt, true));
+        log.debug("End to insert '{}' (id={}, versionId={}, createdAt={})", object.getClass().getSimpleName(),
+                getTargetObjectRefId(), versionId, createdAt);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public void updateDomainObject(T object, Long versionId) {
-        log.debug("Start to update '{}' with id={}, versionId={}", object.getClass().getSimpleName(),
-                getTargetObjectRefId(), versionId);
+    public void updateDomainObject(T object, LocalDateTime createdAt, Long versionId) {
+        log.debug("Start to update '{}' (id={}, versionId={}, createdAt={})", object.getClass().getSimpleName(),
+                getTargetObjectRefId(), versionId, createdAt);
         getDomainObjectDao().updateNotCurrent(getTargetObjectRefId());
-        getDomainObjectDao().save(convertToDatabaseObject(object, versionId, true));
-        log.debug("End to update '{}' with id={}, versionId={}", object.getClass().getSimpleName(),
-                getTargetObjectRefId(), versionId);
+        getDomainObjectDao().save(convertToDatabaseObject(object, versionId, createdAt, true));
+        log.debug("End to update '{}' (id={}, versionId={}, createdAt={})", object.getClass().getSimpleName(),
+                getTargetObjectRefId(), versionId, createdAt);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    public void removeDomainObject(T object, Long versionId) {
-        log.debug("Start to remove '{}' with id={}, versionId={}", object.getClass().getSimpleName(),
-                getTargetObjectRefId(), versionId);
+    public void removeDomainObject(T object, LocalDateTime createdAt, Long versionId) {
+        log.debug("Start to remove '{}' (id={}, versionId={}, createdAt={})", object.getClass().getSimpleName(),
+                getTargetObjectRefId(), versionId, createdAt);
         getDomainObjectDao().updateNotCurrent(getTargetObjectRefId());
-        getDomainObjectDao().save(convertToDatabaseObject(object, versionId, false));
-        log.debug("End to remove '{}' with id={}, versionId={}", object.getClass().getSimpleName(),
-                getTargetObjectRefId(), versionId);
+        getDomainObjectDao().save(convertToDatabaseObject(object, versionId, createdAt, false));
+        log.debug("End to remove '{}' (id={}, versionId={}, createdAt={})", object.getClass().getSimpleName(),
+                getTargetObjectRefId(), versionId, createdAt);
     }
 }
