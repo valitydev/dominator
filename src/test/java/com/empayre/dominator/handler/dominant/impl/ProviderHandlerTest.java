@@ -32,6 +32,7 @@ public class ProviderHandlerTest {
         var provider =
                 providerHandler.convertToDatabaseObject(providerObject, 1L, LocalDateTime.now(), true);
         Assertions.assertNotNull(provider);
+        Assertions.assertNotNull(provider.getCreatedAt());
         Assertions.assertEquals(provider.getName(), providerObject.getData().getName());
         Assertions.assertEquals(provider.getIdentity(), providerObject.getData().getIdentity());
         Assertions.assertEquals(provider.getDescription(), providerObject.getData().getDescription());
