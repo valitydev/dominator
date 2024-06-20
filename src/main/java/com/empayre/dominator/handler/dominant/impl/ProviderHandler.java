@@ -15,6 +15,7 @@ import org.apache.thrift.TException;
 import org.apache.thrift.TSerializer;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -47,9 +48,13 @@ public class ProviderHandler extends AbstractDominantHandler<ProviderObject, Pro
     }
 
     @Override
-    public Provider convertToDatabaseObject(ProviderObject providerObject, Long versionId, boolean current) {
+    public Provider convertToDatabaseObject(ProviderObject providerObject,
+                                            Long versionId,
+                                            LocalDateTime createdAt,
+                                            boolean current) {
         Provider provider = new Provider();
         provider.setVersionId(versionId);
+        provider.setCreatedAt(createdAt);
         provider.setProviderRefId(getTargetObjectRefId());
         dev.vality.damsel.domain.Provider data = providerObject.getData();
         provider.setName(data.getName());

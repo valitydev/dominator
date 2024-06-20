@@ -155,7 +155,7 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>dominator-proto</artifactId>
-            <version>1.5-b9788c2</version>
+            <version>1.7-41bee97</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>
@@ -184,7 +184,7 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>damsel</artifactId>
-            <version>1.633-63051a5</version>
+            <version>1.636-b869c09</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>

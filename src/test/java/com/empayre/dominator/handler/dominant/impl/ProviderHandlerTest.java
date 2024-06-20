@@ -12,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -28,8 +29,10 @@ public class ProviderHandlerTest {
         ProviderObject providerObject = buildProviderObject();
         ProviderHandler providerHandler = new ProviderHandler(providerDao, new TSerializer());
         providerHandler.setDomainObject(DomainObject.provider(providerObject));
-        var provider = providerHandler.convertToDatabaseObject(providerObject, 1L, true);
+        var provider =
+                providerHandler.convertToDatabaseObject(providerObject, 1L, LocalDateTime.now(), true);
         Assertions.assertNotNull(provider);
+        Assertions.assertNotNull(provider.getCreatedAt());
         Assertions.assertEquals(provider.getName(), providerObject.getData().getName());
         Assertions.assertEquals(provider.getIdentity(), providerObject.getData().getIdentity());
         Assertions.assertEquals(provider.getDescription(), providerObject.getData().getDescription());
