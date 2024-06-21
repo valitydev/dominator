@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>dominator</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <name>dominator</name>
@@ -235,7 +235,7 @@
         <dependency>
             <groupId>org.awaitility</groupId>
             <artifactId>awaitility</artifactId>
-            <version>4.2.0</version>
+            <version>4.2.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
