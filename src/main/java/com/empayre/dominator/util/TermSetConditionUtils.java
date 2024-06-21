@@ -17,6 +17,8 @@ import static com.empayre.dominator.domain.Tables.WALLET;
 @UtilityClass
 public class TermSetConditionUtils {
 
+    private static final String LIKE_SYMBOL = "%";
+
     public static Condition createShopCondition(ShopSearchQuery query) {
         Condition condition = SHOP.CURRENT.isTrue();
         CommonSearchQueryParams commonSearchQueryParams = query.getCommonSearchQueryParams();
@@ -85,10 +87,10 @@ public class TermSetConditionUtils {
         if (!CollectionUtils.isEmpty(commonSearchQueryParams.getCurrencies())) {
             Condition currencyCondition = null;
             for (String currency : commonSearchQueryParams.getCurrencies()) {
-                Condition currentCurrencyCondition = PROVIDER.ACCOUNTS_JSON.like("%%s%".formatted(currency));
+                Condition currentCurrencyCondition =
+                        PROVIDER.ACCOUNTS_JSON.like(LIKE_SYMBOL + currency + LIKE_SYMBOL);
                 currencyCondition = currencyCondition == null
                         ? currentCurrencyCondition : currencyCondition.or(currentCurrencyCondition);
-
             }
             condition = condition.and(currencyCondition);
         }
