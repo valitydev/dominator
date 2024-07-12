@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>dominator</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <name>dominator</name>
@@ -194,7 +194,7 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>xrates-proto</artifactId>
-            <version>1.23-bf0d62d</version>
+            <version>1.25-99d0c5c</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>
