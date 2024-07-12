@@ -164,11 +164,6 @@
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>
-            <artifactId>payout-manager-proto</artifactId>
-            <version>1.36-063163d</version>
-        </dependency>
-        <dependency>
-            <groupId>dev.vality</groupId>
             <artifactId>kafka-common-lib</artifactId>
         </dependency>
         <dependency>
@@ -351,7 +346,7 @@
                             <name>org.jooq.meta.postgres.PostgresDatabase</name>
                             <includes>.*</includes>
                             <excludes>
-                                schema_version|.*func|get_adjustment.*|get_cashflow.*|get_payment.*|get_payout.*|get_refund.*
+                                schema_version|.*func|get_adjustment.*|get_cashflow.*|get_payment.*|get_refund.*
                             </excludes>
                             <inputSchema>${db.schema}</inputSchema>
                         </database>
