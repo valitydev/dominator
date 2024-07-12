@@ -14,9 +14,12 @@ import java.util.List;
 import java.util.Objects;
 
 public class JsonUtil {
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     public static String thriftBaseToJsonString(TBase thriftBase) {
+        if (thriftBase == null) {
+            return null;
+        }
         try {
             return new TBaseProcessor().process(thriftBase, new JsonHandler()).toString();
         } catch (IOException e) {
@@ -25,6 +28,9 @@ public class JsonUtil {
     }
 
     public static JsonNode thriftBaseToJsonNode(TBase thriftBase) {
+        if (thriftBase == null) {
+            return null;
+        }
         try {
             return new TBaseProcessor().process(thriftBase, new JsonHandler());
         } catch (IOException e) {
@@ -33,16 +39,22 @@ public class JsonUtil {
     }
 
     public static String objectToJsonString(Object o) {
+        if (o == null) {
+            return null;
+        }
         try {
-            return objectMapper.writeValueAsString(o);
+            return OBJECT_MAPPER.writeValueAsString(o);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("Couldn't convert object to json string: " + o, e);
         }
     }
 
     public static <T> T stringToObject(byte[] stringObject, Class<T> type) {
+        if (stringObject == null) {
+            return null;
+        }
         try {
-            return objectMapper.readValue(stringObject, type);
+            return OBJECT_MAPPER.readValue(stringObject, type);
         } catch (IOException e) {
             throw new IllegalStateException("Couldn't convert json string to object: ", e);
         }
@@ -59,7 +71,7 @@ public class JsonUtil {
             if (Objects.isNull(object)) {
                 return new byte[0];
             }
-            return objectMapper.writeValueAsBytes(object);
+            return OBJECT_MAPPER.writeValueAsBytes(object);
         } catch (IOException e) {
             throw new IllegalStateException("Couldn't convert object to byte array: ", e);
         }

@@ -7,6 +7,7 @@
         <groupId>dev.vality</groupId>
         <artifactId>service-parent-pom</artifactId>
         <version>3.0.0</version>
+        <relativePath/>
     </parent>
 
     <artifactId>dominator</artifactId>
@@ -184,7 +185,7 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>damsel</artifactId>
-            <version>1.636-b869c09</version>
+            <version>1.641-6051aa9</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>
