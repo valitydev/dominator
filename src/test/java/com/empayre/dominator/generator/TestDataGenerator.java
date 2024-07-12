@@ -188,10 +188,6 @@ public class TestDataGenerator {
                 .setWithdrawals(
                         new WithdrawalProvisionTerms()
                                 .setCurrencies(CurrencySelector.value(Set.of(new CurrencyRef().setSymbolicCode("RUB"))))
-                                .setPayoutMethods(PayoutMethodSelector.value(Set.of(
-                                        new PayoutMethodRef()
-                                                .setId(PayoutMethod.wallet_info)
-                                )))
                                 .setCashFlow(CashFlowSelector.value(createCashFlowPostings()))
                 );
     }
