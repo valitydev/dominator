@@ -6,7 +6,7 @@
 
 <suppressions>
     <suppress checks="[a-zA-Z0-9]*"
-              files="com[\\/]empayre[\\/]dominant[\\/]warehouse[\\/].*.java"/>
+              files="dev[\\/]vality[\\/]dominant[\\/]warehouse[\\/].*.java"/>
     <suppress checks="LineLength" files=".*ContractUtil.java"/>
     <suppress checks="VariableDeclarationUsageDistance" files=".*DaoTests.java"/>
 </suppressions>
