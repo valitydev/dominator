@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>dominator</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <name>dominator</name>
@@ -189,7 +189,7 @@
         <dependency>
             <groupId>dev.vality</groupId>
             <artifactId>fistful-proto</artifactId>
-            <version>1.166-be67e59</version>
+            <version>1.179-54f1d58</version>
         </dependency>
         <dependency>
             <groupId>dev.vality</groupId>
